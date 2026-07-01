@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NexBank.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using NexBank.Infrastructure.Persistence;
 namespace NexBank.Infrastructure.Migrations
 {
     [DbContext(typeof(NexBankDbContext))]
-    partial class NexBankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260701131020_RenameCreatedAt")]
+    partial class RenameCreatedAt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
