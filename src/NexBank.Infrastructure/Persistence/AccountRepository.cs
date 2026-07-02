@@ -35,4 +35,16 @@ public class AccountRepository : IAccountRepository //bu sınıf sözleşmeyi im
             .OrderByDescending(t => t.TransactionDate)
             .ToListAsync();
     }
+
+    public async Task<bool> IsAccountOwnedByUserAsync(int accountId, int userId)
+    {
+        return await _context.Accounts
+            .AnyAsync(a => a.Id == accountId && a.UserId == userId);
+    }
+    public async Task AddTransactionAsync(Transaction transaction, Account account)
+    {
+        _context.Transactions.Add(transaction);
+        _context.Accounts.Update(account);
+        await _context.SaveChangesAsync();
+    }
 }

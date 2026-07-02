@@ -1,12 +1,15 @@
-﻿using System;
+﻿using AutoMapper;
+using NexBank.Application.DTOs;
+using NexBank.Application.Interfaces;
+using NexBank.Domain.Enums;
+using NexBank.Domain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using NexBank.Application.DTOs;
-using NexBank.Application.Interfaces;
-using NexBank.Domain.Interfaces;
+using NexBank.Domain.Entities;
+using NexBank.Domain.Enums;
 
 namespace NexBank.Application.Services;
 
@@ -37,5 +40,37 @@ public class AccountService : IAccountService
     {
         var transactions = await _accountRepository.GetTransactionsAsync(accountId, startDate, endDate);
         return _mapper.Map<List<TransactionDto>>(transactions);
+    }
+
+    public async Task<bool> IsAccountOwnedByUserAsync(int accountId, int userId)
+    {
+        return await _accountRepository.IsAccountOwnedByUserAsync(accountId, userId);
+    }
+
+    public async Task<TransactionDto?> AddTransactionAsync(int accountId, int userId, CreateTransactionDto dto)
+    {
+        var account = await _accountRepository.GetByIdAsync(accountId);
+        if (account == null || account.UserId != userId)
+            return null;
+
+        // Bakiyeyi güncelle
+        if (dto.Type == TransactionType.Credit)
+            account.Balance += dto.Amount;
+        else
+            account.Balance -= dto.Amount;
+
+        var transaction = new Transaction
+        {
+            AccountId = accountId,
+            Amount = dto.Amount,
+            Type = dto.Type,
+            Description = dto.Description,
+            TransactionDate = DateTime.UtcNow,
+            BalanceAfterTransaction = account.Balance
+        };
+
+        await _accountRepository.AddTransactionAsync(transaction, account);
+
+        return _mapper.Map<TransactionDto>(transaction);
     }
 }
