@@ -17,6 +17,9 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<NexBankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+//Singleton, Transient, Scoped - yazılım yavaş döngüsü
+//rest json 
 // Repository kayıtları
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
@@ -42,6 +45,7 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT",
         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
         Description = "JWT token girin: Bearer {token}"
+        
     });
     c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
     {
@@ -71,7 +75,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+           
         };
     });
 

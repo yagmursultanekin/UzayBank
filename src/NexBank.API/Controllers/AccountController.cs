@@ -8,14 +8,15 @@ namespace NexBank.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+//[Authorize]
+//localhost:4000/api/Account/my-accounts
 
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
 
     public AccountController(IAccountService accountService)
-    {
+    {addclaim
         _accountService = accountService;
     }
 

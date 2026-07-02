@@ -45,7 +45,7 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto?> LoginAsync(LoginDto loginDto)
     {
         // Kullanıcıyı bul
-        var user = _context.Users.FirstOrDefault(u => u.Email == loginDto.Email);
+        var user = _context.Users.FirstOrDefault(u => u.Email == loginDto.Email );
         if (user == null)
             return null;
 

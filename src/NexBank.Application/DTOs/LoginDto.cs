@@ -8,7 +8,8 @@ namespace NexBank.Application.DTOs;
 
 public class LoginDto
 {
-   public  string Email { get; set; } = string.Empty;
+    //vs_installer.exe --locale en-US
+    public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
 
 }
