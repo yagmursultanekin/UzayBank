@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using NexBank.Application.Interfaces;
 using NexBank.Application.Services;
 using NexBank.Domain.Interfaces;
+using NexBank.Infrastructure.ExternalServices;
 using NexBank.Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using NexBank.Infrastructure.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddControllers();
 // Veritabanı
 builder.Services.AddDbContext<NexBankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddHttpClient<VakifBankAccountService>();
+builder.Services.AddHttpClient<VakifBankAuthService>();
 
 
 //Singleton, Transient, Scoped - yazılım yavaş döngüsü
@@ -34,7 +37,7 @@ builder.Services.AddDbContext<NexBankDbContext>(options =>
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 // Service kayıtları
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountService, VakifBankAccountService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // AutoMapper
