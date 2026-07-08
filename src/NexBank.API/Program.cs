@@ -27,17 +27,41 @@ builder.Services.AddControllers();
 // Veritabanı
 builder.Services.AddDbContext<NexBankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddHttpClient<VakifBankAccountService>();
-builder.Services.AddHttpClient<VakifBankAuthService>();
+builder.Services.AddHttpClient<VakifBankAuthService>()
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        UseProxy = false,
+        AutomaticDecompression = System.Net.DecompressionMethods.All,
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    });
+var vakifBankCookies = new System.Net.CookieContainer();
 
+builder.Services.AddHttpClient<VakifBankAuthService>()
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        UseProxy = false,
+        UseCookies = true,
+        CookieContainer = vakifBankCookies,
+        AutomaticDecompression = System.Net.DecompressionMethods.All,
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    });
 
+builder.Services.AddHttpClient<VakifBankAccountService>()
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        UseProxy = false,
+        UseCookies = true,
+        CookieContainer = vakifBankCookies,
+        AutomaticDecompression = System.Net.DecompressionMethods.All,
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    });
 //Singleton, Transient, Scoped - yazılım yavaş döngüsü
 //rest json 
 // Repository kayıtları
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
 // Service kayıtları
-builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountService, VakifBankAccountService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // AutoMapper

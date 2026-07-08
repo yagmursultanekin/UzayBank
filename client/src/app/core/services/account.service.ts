@@ -8,7 +8,9 @@ import { Transaction, CreateTransactionRequest } from '../models/transaction.mod
   providedIn: 'root'
 })
 export class AccountService {
-  private apiUrl = 'https://localhost:7243/api/account';
+  // private apiUrl = 'https://localhost:7243/api/account';
+    private apiUrl = 'https://localhost:7100/api/account';
+
 
   constructor(private http: HttpClient) {}
 

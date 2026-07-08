@@ -7,7 +7,8 @@ import { LoginRequest, RegisterRequest, AuthResponse } from '../models/auth.mode
     providedIn: 'root'
 })
 export class AuthService{
-    private apiUrl = 'https://localhost:7243/api/auth';
+    // private apiUrl = 'https://localhost:7243/api/auth';
+ private apiUrl = 'https://localhost:7100/api/auth';
 
     constructor(private http: HttpClient){}
 

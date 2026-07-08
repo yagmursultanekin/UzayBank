@@ -27,9 +27,10 @@ export class AnalyticsComponent implements OnInit {
   }
 
   loadData(): void {
-    this.accountService.getMyAccounts().subscribe({
+    this.accountService.getAccountById(2).subscribe({
       next: (accounts) => {
-        const tryAccount = accounts.find(a => a.currency === 'TRY');
+        const tryAccount = accounts;
+        //.find(a => a.currency === 'TRY');
         if (tryAccount) {
           this.loadTransactions(tryAccount.id);
         } else {

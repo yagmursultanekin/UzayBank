@@ -18,27 +18,46 @@ public class VakifBankAuthService
 
     public async Task<string> GetAccessTokenAsync()
     {
-        // Token hâlâ geçerliyse cache'den dön
         if (_cachedToken != null && DateTime.UtcNow < _tokenExpiry)
             return _cachedToken;
 
         var apiKey = _configuration["VakifBankApi:ApiKey"];
         var apiSecret = _configuration["VakifBankApi:ApiSecret"];
         var scope = _configuration["VakifBankApi:Scope"];
+        var resource = _configuration["VakifBankApi:Resource"];
+        var consentId = _configuration["VakifBankApi:consentId"];
         var baseUrl = _configuration["VakifBankApi:BaseUrl"];
 
         var formData = new FormUrlEncodedContent(new[]
         {
             new KeyValuePair<string, string>("client_id", apiKey!),
             new KeyValuePair<string, string>("client_secret", apiSecret!),
-            new KeyValuePair<string, string>("grant_type", "client_credentials"),
+            new KeyValuePair<string, string>("grant_type", "b2b_credentials"),
             new KeyValuePair<string, string>("scope", scope!),
-            new KeyValuePair<string, string>("resource", "sandbox")
+            new KeyValuePair<string, string>("resource", resource!),
+            new KeyValuePair<string, string>("consentId", consentId!)
         });
 
-        var response = await _httpClient.PostAsync($"{baseUrl}/auth/oauth/v2/token", formData);
+        var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}/oauth2/token")
+        {
+            Content = formData
+        };
+        request.Headers.Add("User-Agent", "PostmanRuntime/7.39.0");
+        request.Headers.Add("Accept", "*/*");
+
+        HttpResponseMessage response;
+        try
+        {
+            response = await _httpClient.SendAsync(request);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("VAKIFBANK HATA DETAYI:");
+            Console.WriteLine(ex.ToString());
+            throw;
+        }
         var rawContent = await response.Content.ReadAsStringAsync();
-        Console.WriteLine($"VAKIFBANK CEVABI ({response.StatusCode}): {rawContent}");
+        Console.WriteLine($"VAKIFBANK TOKEN CEVABI ({response.StatusCode}): {rawContent}");
         response.EnsureSuccessStatusCode();
 
         var json = JsonDocument.Parse(rawContent);
