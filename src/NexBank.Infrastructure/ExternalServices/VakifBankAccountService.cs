@@ -13,6 +13,10 @@ public class VakifBankAccountService : IAccountService
     private readonly VakifBankAuthService _authService;
     private readonly IConfiguration _configuration;
 
+    // Hesap listesi önbelleği — istekler arası paylaşılır (servis scoped olduğu için static)
+    private static List<AccountDto>? _cachedAccounts;
+    private static DateTime _cacheExpiry = DateTime.MinValue;
+    private static readonly object _cacheLock = new();
     public VakifBankAccountService(
         HttpClient httpClient,
         VakifBankAuthService authService,
@@ -52,6 +56,13 @@ public class VakifBankAccountService : IAccountService
 
     public async Task<List<AccountDto>> GetAccountsByUserIdAsync(int userId)
     {
+        // Önbellek taze ise API'ye hiç gitme
+        lock (_cacheLock)
+        {
+            if (_cachedAccounts != null && DateTime.UtcNow < _cacheExpiry)
+                return _cachedAccounts;
+        }
+
         var content = await PostAsync("/accountList", "{}");
 
         var json = JsonDocument.Parse(content);
@@ -84,6 +95,12 @@ public class VakifBankAccountService : IAccountService
                 Balance = item.TryGetProperty("Balance", out var b) ? ParseDecimal(b) : 0,
                 AccountHolderName = ""
             });
+        }
+
+        lock (_cacheLock)
+        {
+            _cachedAccounts = accounts;
+            _cacheExpiry = DateTime.UtcNow.AddMinutes(2);
         }
 
         return accounts;

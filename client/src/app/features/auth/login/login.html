@@ -6,7 +6,7 @@
       <p>Hesabınıza giriş yapın</p>
     </div>
 
-    <div class="success-message" *ngIf="successMessage">
+    <div [ngClass]="messageType === 'warning' ? 'warning-message' : 'success-message'" *ngIf="successMessage">
       {{ successMessage }}
     </div>
 

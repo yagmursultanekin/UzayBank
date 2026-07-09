@@ -20,6 +20,7 @@ export class LoginComponent {
   };
   errorMessage = '';
   successMessage = '';
+  messageType: 'success' | 'warning' = 'success';
   isLoading = false;
 
   constructor(
@@ -28,6 +29,7 @@ export class LoginComponent {
   ) {
     const nav = this.router.getCurrentNavigation();
     this.successMessage = nav?.extras?.state?.['successMessage'] ?? '';
+    this.messageType = nav?.extras?.state?.['messageType'] ?? 'success';
   }
 
   onSubmit(): void {
