@@ -31,9 +31,10 @@ export class RegisterComponent {
     this.errorMessage = '';
 
     this.authService.register(this.registerData).subscribe({
-      next: (response) => {
-        this.authService.saveToken(response.token);
-        this.router.navigate(['/dashboard']);
+      next: () => {
+        this.router.navigate(['/login'], {
+          state: { successMessage: 'Kayıt işlemi başarılı.' }
+        });
       },
       error: () => {
         this.errorMessage = 'Bu e-posta adresi zaten kayıtlı.';
