@@ -62,6 +62,10 @@ goToAnalytics(): void {
   this.router.navigate(['/analytics']);
 }
 
+goToNearestAtm(): void {
+    this.router.navigate(['/nearest-atm']);
+  }
+
 loadTransactions(accountId: number): void {
   const today = new Date();
   const thirtyDaysAgo = new Date();

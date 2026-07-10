@@ -31,11 +31,12 @@ public class VakifBankBranchService : IBranchService
         var token = await _authService.GetClientCredentialsTokenAsync();
         var baseUrl = _configuration["VakifBankApi:BaseUrl"];
 
-        // Koordinatları VakıfBank'ın beklediği virgüllü formata çevir
+        // Servis, uzun ondalık kuyruklu koordinatı kabul etmiyor (ACBH000049).
+        // 6 hane ≈ ~10 cm hassasiyet — ATM araması için fazlasıyla yeterli.
         var requestBody = JsonSerializer.Serialize(new
         {
-            Latitude = latitude.ToString(TrCulture),
-            Longitude = longitude.ToString(TrCulture),
+            Latitude = Math.Round(latitude, 6).ToString(TrCulture),
+            Longitude = Math.Round(longitude, 6).ToString(TrCulture),
             DistanceLimit = distanceLimitKm
         });
 

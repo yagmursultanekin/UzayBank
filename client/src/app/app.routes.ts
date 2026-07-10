@@ -30,9 +30,15 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
-  path: 'analytics',
-  loadComponent: () =>
-    import('./features/analytics/analytics').then(m => m.AnalyticsComponent),
-  canActivate: [authGuard]
-}
+    path: 'analytics',
+    loadComponent: () =>
+      import('./features/analytics/analytics').then(m => m.AnalyticsComponent),
+    canActivate: [authGuard]
+  },
+  {
+    path: 'nearest-atm',
+    loadComponent: () =>
+      import('./features/nearest-atm/nearest-atm').then(m => m.NearestAtmComponent),
+    canActivate: [authGuard]
+  }
 ];
