@@ -55,7 +55,6 @@ builder.Services.AddHttpClient<VakifBankAccountService>()
         AutomaticDecompression = System.Net.DecompressionMethods.All,
         ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
     });
-//Singleton, Transient, Scoped - yazılım yavaş döngüsü
 //rest json 
 // Repository kayıtları
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
@@ -64,6 +63,7 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAccountService, VakifBankAccountService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBranchService, VakifBankBranchService>();
+builder.Services.AddScoped<IMarketService, VakifBankMarketService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
