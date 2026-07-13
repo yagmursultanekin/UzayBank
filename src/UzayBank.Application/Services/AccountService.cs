@@ -9,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UzayBank.Domain.Entities;
-using UzayBank.Domain.Enums;
 
 namespace UzayBank.Application.Services;
 
