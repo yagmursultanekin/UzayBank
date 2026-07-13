@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="src/NexBank.API/NexBank.API.csproj" Id="cf16f4bc-c19f-4fc8-8ce8-746a89ddfe5c" />
-  <Project Path="src/NexBank.Application/NexBank.Application.csproj" Id="c0535902-2055-4b0e-a08b-763cfc02b390" />
-  <Project Path="src/NexBank.Domain/NexBank.Domain.csproj" Id="b5f9f2f3-0641-496d-9a04-9563ce676e13" />
-  <Project Path="src/NexBank.Infrastructure/NexBank.Infrastructure.csproj" Id="edc10f61-b6b0-4d3a-b024-d75e029be66e" />
-</Solution>
