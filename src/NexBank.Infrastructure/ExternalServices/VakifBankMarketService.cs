@@ -25,34 +25,33 @@ public class VakifBankMarketService : IMarketService
 
     public async Task<List<MarketRateDto>> GetCurrencyRatesAsync()
     {
-        var content = await PostAsync("/getCurrencyRates", dateFieldName: "ValidityDate");
+        var dateText = DateTime.UtcNow.ToString("yyyy-MM-dd") + "T00:00:00.000Z";
+
+        var content = await PostAsync("/getCurrencyRates", "ValidityDate", dateText);
         return ParseRates(content, listName: "Currency",
             codeField: "CurrencyCode", nameField: "CurrencyName");
     }
 
     public async Task<List<MarketRateDto>> GetGoldPricesAsync()
     {
-        var content = await PostAsync("/getGoldPrices", dateFieldName: "PriceDate");
+        // Gold yalnızca gün başlangıcını (00:00 UTC) kabul ediyor;
+        // gün içi saat gönderilirse ACBH000083 "tarih bugünden büyük olamaz" dönüyor
+        var dateText = DateTime.UtcNow.ToString("yyyy-MM-dd") + "T00:00:00.000Z";
+
+        var content = await PostAsync("/getGoldPrices", "PriceDate", dateText);
         return ParseRates(content, listName: "GoldRate",
             codeField: "ISIN", nameField: "ProductName");
     }
 
-   private async Task<string> PostAsync(string endpoint, string dateFieldName)
+    private async Task<string> PostAsync(string endpoint, string dateFieldName, string dateText)
     {
         var token = await _authService.GetClientCredentialsTokenAsync();
         var baseUrl = _configuration["VakifBankApi:BaseUrl"];
 
-        // Servisler boş body kabul etmiyor; günün tarihiyle sorguluyoruz.
-        // Not: tarih alanının adı servise göre değişiyor (PriceDate / ValidityDate)
-        /* var dateText = DateTime.UtcNow.ToString("yyyy-MM-dd'T'HH:mm:ss.fff'Z'");
-         var requestBody = $"{{ \"{dateFieldName}\": \"{dateText}\" }}"; */
-
-        // Türkiye saatiyle (+03:00) o anın damgası — servisin "bugün" tanımıyla uyumlu
-        var turkeyTime = TimeZoneInfo.ConvertTimeFromUtc(
-            DateTime.UtcNow,
-            TimeZoneInfo.FindSystemTimeZoneById("Turkey Standard Time"));
-        var dateText = turkeyTime.ToString("yyyy-MM-dd'T'HH:mm:ss.fff") + "+03:00";
+        // Not: iki servis farklı tarih alanı VE farklı tarih formatı istiyor
+        // (currencies: ValidityDate + gerçek zamanlı; gold: PriceDate + gün başlangıcı)
         var requestBody = $"{{ \"{dateFieldName}\": \"{dateText}\" }}";
+
         var request = new HttpRequestMessage(HttpMethod.Post, $"{baseUrl}{endpoint}")
         {
             Content = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json")

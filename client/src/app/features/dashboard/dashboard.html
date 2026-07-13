@@ -26,6 +26,25 @@
         <h2 class="summary-value">{{ getTotalBalance() | number:'1.2-2' }} ₺</h2>
       </section>
 
+      <section class="market-strip" *ngIf="marketRates.length > 0">
+        <div class="market-header">
+          <h3>💱 Piyasa</h3>
+          <span class="market-time" *ngIf="marketUpdateTime">
+            Son güncelleme: {{ marketUpdateTime | date:'dd.MM.yyyy HH:mm' }}
+          </span>
+        </div>
+        <div class="market-grid">
+          <div class="market-card" *ngFor="let rate of marketRates">
+            <p class="market-code">{{ rate.code }}</p>
+            <p class="market-name">{{ rate.name }}</p>
+            <div class="market-values">
+              <span>Alış: <b>{{ rate.saleRate | number:'1.2-4' }}</b></span>
+              <span>Satış: <b>{{ rate.purchaseRate | number:'1.2-4' }}</b></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="analytics-link-card" (click)="goToAnalytics()">
         <div>
           <h3>📊 Analizlerim</h3>
