@@ -1,36 +1,64 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
 import { LoginRequest, RegisterRequest, AuthResponse } from '../models/auth.model';
 
 @Injectable({
     providedIn: 'root'
 })
-export class AuthService{
-    // private apiUrl = 'https://localhost:7243/api/auth';
- private apiUrl = 'https://localhost:7100/api/auth';
+export class AuthService {
+    private apiUrl = 'https://localhost:7100/api/auth';
 
-    constructor(private http: HttpClient){}
+    constructor(
+        private http: HttpClient,
+        private router: Router
+    ) {}
 
     login(request: LoginRequest): Observable<AuthResponse> {
-        return this.http.post<AuthResponse>(`${this.apiUrl}/login` ,request);
+        return this.http.post<AuthResponse>(`${this.apiUrl}/login`, request);
     }
-register(request: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request);
-}
 
-  saveToken(token: string): void {
-    localStorage.setItem('token', token);
-  }
-getToken(): string | null {
-    return localStorage.getItem('token');
-  }
+    register(request: RegisterRequest): Observable<AuthResponse> {
+        return this.http.post<AuthResponse>(`${this.apiUrl}/register`, request);
+    }
 
-  isLoggedIn(): boolean {
-    return !!this.getToken();
-  }
-  logout(): void {
-  localStorage.removeItem('token');
-}
-}
+    saveToken(token: string): void {
+        localStorage.setItem('token', token);
+    }
 
+    getToken(): string | null {
+        return localStorage.getItem('token');
+    }
+
+    isLoggedIn(): boolean {
+        return !!this.getToken();
+    }
+
+    /**
+     * Güvenli çıkış.
+     * Backend'e haber verir (token kara listeye alınır), sonra yerel oturumu temizler.
+     * Backend'e ulaşılamasa bile yerel temizlik yapılır — kullanıcı her koşulda çıkabilmeli.
+     */
+    logout(): void {
+        this.http.post(`${this.apiUrl}/logout`, {})
+            .pipe(
+                // Backend çökse, ağ kopsa, token süresi dolmuş olsa bile hata yutulur.
+                // Amaç: çıkış işlemi hiçbir koşulda engellenmemeli.
+                catchError(() => of(null)),
+                // Başarı ya da hata — her iki durumda da yerel temizlik çalışır.
+                finalize(() => this.clearSession())
+            )
+            .subscribe();
+    }
+
+    /**
+     * Oturumun yerel izlerini siler ve giriş sayfasına yönlendirir.
+     * 401 interceptor'ı da bunu çağırır (token süresi dolduğunda).
+     */
+    clearSession(): void {
+        localStorage.removeItem('token');
+        this.router.navigate(['/login']);
+    }
+}

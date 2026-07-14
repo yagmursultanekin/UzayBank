@@ -17,13 +17,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(request).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Oturum süresi dolduysa (401) token'ı temizle ve login'e yönlendir.
-      // Login/register isteklerinin kendi 401/400'leri bu kapsamda değil —
-      // onlar component'lerde "şifre hatalı" gibi mesajlarla ele alınıyor.
+      // Oturum süresi dolduysa (401) yerel oturumu temizle ve login'e yönlendir.
+      //
+      // logout() DEĞİL, clearSession() çağrılıyor. Çünkü logout() backend'e istek atar;
+      // token zaten geçersizken bu istek de 401 döner ve interceptor kendini
+      // tekrar tetikler — sonsuz döngü oluşur.
+      //
+      // Ayrıca token zaten geçersiz olduğu için kara listeye almanın anlamı yok.
       if (error.status === 401 && !req.url.includes('/api/auth/')) {
-        authService.logout();
+        localStorage.removeItem('token');
         router.navigate(['/login'], {
-          state: { successMessage: 'Oturum süreniz doldu. Lütfen tekrar giriş yapın.' ,
+          state: {
+            successMessage: 'Oturum süreniz doldu. Lütfen tekrar giriş yapın.',
             messageType: 'warning'
           }
         });
