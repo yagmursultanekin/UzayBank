@@ -11,5 +11,6 @@ namespace UzayBank.Application.Interfaces
     {
         Task<AuthResponseDto?> LoginAsync(LoginDto loginDto);
         Task<AuthResponseDto?> RegisterAsync(RegisterDto registerDto);
+        Task<bool> LogoutAsync(string jti, DateTime expiresAt);
     }
 }

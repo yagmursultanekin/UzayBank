@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using UzayBank.Application.DTOs;
 using UzayBank.Application.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace UzayBank.API.Controllers;
 
@@ -42,5 +44,23 @@ public class AuthController : ControllerBase
             return Unauthorized("E-posta veya şifre hatalı.");
 
         return Ok(result);
+    }
+
+    [HttpPost("logout")]
+    [Authorize]   // Çıkış yapmak için geçerli bir token gerekli
+    public async Task<IActionResult> Logout()
+    {
+        // Token'ın kimliği ve son kullanma tarihi — ikisi de token'ın içinde
+        var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+        var expClaim = User.FindFirst(JwtRegisteredClaimNames.Exp)?.Value;
+
+        if (jti == null || expClaim == null)
+            return BadRequest("Token bilgisi okunamadı.");
+
+        // exp, Unix timestamp (saniye) olarak gelir
+        var expiresAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expClaim)).UtcDateTime;
+
+        await _authService.LogoutAsync(jti, expiresAt);
+        return Ok(new { message = "Çıkış yapıldı." });
     }
 }

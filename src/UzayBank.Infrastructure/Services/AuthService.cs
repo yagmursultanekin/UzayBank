@@ -14,11 +14,13 @@ public class AuthService : IAuthService
 {
     private readonly UzayBankDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly ITokenBlacklistService _blacklist;
 
-    public AuthService(UzayBankDbContext context, IConfiguration configuration)
+    public AuthService(UzayBankDbContext context, IConfiguration configuration, ITokenBlacklistService blacklist)
     {
         _context = context;
         _configuration = configuration;
+        _blacklist = blacklist;
     }
 
     public async Task<AuthResponseDto?> RegisterAsync(RegisterDto registerDto)
@@ -56,6 +58,12 @@ public class AuthService : IAuthService
         return await Task.FromResult(GenerateToken(user));
     }
 
+    public async Task<bool> LogoutAsync(string jti, DateTime expiresAt)
+    {
+        _blacklist.Revoke(jti, expiresAt);
+        return await Task.FromResult(true);
+    }
+
     private AuthResponseDto GenerateToken(User user)
     {
         var secretKey = _configuration["Jwt:SecretKey"]!;
@@ -67,10 +75,12 @@ public class AuthService : IAuthService
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]
-        {
+          {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Name, user.FullName)
+            new Claim(ClaimTypes.Name, user.FullName),
+            // Her token'a benzersiz kimlik — çıkışta bu id kara listeye yazılacak
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
         var token = new JwtSecurityToken(

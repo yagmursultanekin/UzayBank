@@ -27,13 +27,6 @@ builder.Services.AddControllers();
 // Veritabanı
 builder.Services.AddDbContext<UzayBankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddHttpClient<VakifBankAuthService>()
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-    {
-        UseProxy = false,
-        AutomaticDecompression = System.Net.DecompressionMethods.All,
-        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-    });
 var vakifBankCookies = new System.Net.CookieContainer();
 
 builder.Services.AddHttpClient<VakifBankAuthService>()
@@ -64,6 +57,10 @@ builder.Services.AddScoped<IAccountService, VakifBankAccountService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBranchService, VakifBankBranchService>();
 builder.Services.AddScoped<IMarketService, VakifBankMarketService>();
+
+// Çıkış yapılmış token'ların kara listesi
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ITokenBlacklistService, TokenBlacklistService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
@@ -113,8 +110,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-           
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+
+        // Token imzası geçerli olsa bile, çıkış yapılmışsa reddet
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = context =>
+            {
+                var blacklist = context.HttpContext.RequestServices
+                    .GetRequiredService<ITokenBlacklistService>();
+
+                var jti = context.Principal?
+                    .FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti)?.Value;
+
+                if (jti != null && blacklist.IsRevoked(jti))
+                    context.Fail("Token iptal edilmiş (çıkış yapılmış).");
+
+                return Task.CompletedTask;
+            }
         };
     });
 

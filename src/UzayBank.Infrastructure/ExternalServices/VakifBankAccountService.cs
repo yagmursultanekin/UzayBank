@@ -50,7 +50,9 @@ public class VakifBankAccountService : IAccountService
             throw new InvalidOperationException(
                 $"VakıfBank WAF isteği reddetti (HTML döndü). Cevap: {content}");
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+            throw new VakifBankApiException(response.StatusCode, content);
+
         return content;
     }
 
@@ -133,10 +135,10 @@ public class VakifBankAccountService : IAccountService
         {
             content = await PostAsync("/accountTransactions", requestBody);
         }
-        catch (HttpRequestException)
+        catch (VakifBankApiException ex) when (ex.HasErrorCode("ACBH000202"))
         {
-            // VakıfBank, tarih aralığında hareket yoksa 400 + ACBH000202 dönüyor.
-            // Bu bir hata değil, boş sonuç — boş liste dönüyoruz.
+            // Tarih aralığında hareket yok — hata değil, boş sonuç.
+            // Diğer tüm hatalar (rıza geçersiz, yetki, sunucu) yukarı fırlar.
             return new List<TransactionDto>();
         }
 
