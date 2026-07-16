@@ -1,31 +1,31 @@
 <div class="atm-container">
 
   <header class="atm-header">
-    <button class="back-btn" (click)="goBack()">← Geri</button>
-    <h1>En Yakın ATM ve Şubeler</h1>
+    <button class="back-btn" (click)="goBack()">← {{ 'COMMON.BACK' | translate }}</button>
+    <h1>{{ 'ATM.TITLE' | translate }}</h1>
   </header>
 
   <main class="atm-main">
 
     <div class="error-message" *ngIf="errorMessage">
-      {{ errorMessage }}
+      {{ errorMessage | translate }}
     </div>
 
     <div class="controls">
       <div class="filter-group">
-        <label>Göster:</label>
+        <label>{{ 'ATM.SHOW' | translate }}</label>
         <select [(ngModel)]="typeFilter" (change)="applyFilter()">
-          <option value="all">Tümü</option>
-          <option value="ATM">Sadece ATM'ler</option>
-          <option value="Şube">Sadece Şubeler</option>
+          <option value="all">{{ 'ATM.ALL' | translate }}</option>
+          <option value="ATM">{{ 'ATM.ONLY_ATM' | translate }}</option>
+          <option value="Şube">{{ 'ATM.ONLY_BRANCH' | translate }}</option>
         </select>
       </div>
       <div class="filter-group">
-        <label>Mesafe:</label>
+        <label>{{ 'ATM.DISTANCE' | translate }}</label>
         <select [(ngModel)]="distanceKm" (change)="loadBranches()">
-          <option [value]="1">1 km</option>
-          <option [value]="3">3 km</option>
-          <option [value]="5">5 km</option>
+          <option [value]="1">1 {{ 'ATM.KM' | translate }}</option>
+          <option [value]="3">3 {{ 'ATM.KM' | translate }}</option>
+          <option [value]="5">5 {{ 'ATM.KM' | translate }}</option>
         </select>
       </div>
     </div>
@@ -35,10 +35,10 @@
       <div id="branch-map" class="map-panel"></div>
 
       <div class="list-panel">
-        <div class="loading" *ngIf="isLoading">Yükleniyor...</div>
+        <div class="loading" *ngIf="isLoading">{{ 'ATM.LOADING' | translate }}</div>
 
         <div class="empty-state" *ngIf="!isLoading && filteredBranches.length === 0">
-          Bu mesafede sonuç bulunamadı.
+          {{ 'ATM.NO_RESULTS' | translate }}
         </div>
 
         <div class="branch-item" *ngFor="let branch of filteredBranches" (click)="focusBranch(branch)">
@@ -48,7 +48,7 @@
             <p class="branch-address">{{ branch.address }}</p>
             <p class="branch-phone" *ngIf="branch.phone">📞 {{ branch.phone }}</p>
           </div>
-          <div class="branch-distance">{{ branch.distanceKm | number:'1.2-2' }} km</div>
+          <div class="branch-distance">{{ branch.distanceKm | number:'1.2-2' }} {{ 'ATM.KM' | translate }}</div>
         </div>
       </div>
 

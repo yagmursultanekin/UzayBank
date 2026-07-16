@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import { BranchService } from '../../core/services/branch.service';
 import { Branch } from '../../core/models/branch.model';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-nearest-atm',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './nearest-atm.html',
   styleUrl: './nearest-atm.scss'
 })
@@ -28,7 +29,8 @@ export class NearestAtmComponent implements OnInit, OnDestroy {
 
   constructor(
     private branchService: BranchService,
-    private router: Router
+    private router: Router,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -71,7 +73,7 @@ export class NearestAtmComponent implements OnInit, OnDestroy {
       color: '#0f3460',
       fillColor: '#0f3460',
       fillOpacity: 0.9
-    }).addTo(this.map).bindPopup('Konumunuz');
+    }).addTo(this.map).bindPopup(this.translate.instant('ATM.YOUR_LOCATION'));
 
     this.loadBranches();
   }
@@ -87,7 +89,7 @@ export class NearestAtmComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'ATM/şube bilgileri yüklenemedi.';
+        this.errorMessage = 'ATM.LOAD_ERROR';
         this.isLoading = false;
       }
     });
@@ -114,9 +116,10 @@ export class NearestAtmComponent implements OnInit, OnDestroy {
         iconAnchor: [15, 15]
       });
 
+      const km = this.translate.instant('ATM.KM');
       const marker = L.marker([branch.latitude, branch.longitude], { icon })
         .addTo(this.map)
-        .bindPopup(`<b>${branch.name}</b><br>${branch.address}<br>${branch.distanceKm.toFixed(2)} km`);
+        .bindPopup(`<b>${branch.name}</b><br>${branch.address}<br>${branch.distanceKm.toFixed(2)} ${km}`);
 
       this.markers.push(marker);
     }

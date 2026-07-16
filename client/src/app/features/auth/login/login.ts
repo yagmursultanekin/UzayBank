@@ -2,14 +2,15 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoginRequest } from '../../../core/models/auth.model';
-
+import { LanguageSwitcherComponent } from '../../../shared/language-switcher/language-switcher';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, LanguageSwitcherComponent],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
@@ -18,8 +19,12 @@ export class LoginComponent {
     email: '',
     password: ''
   };
+
+  // Bu alanlar artık hazır METİN değil, çeviri ANAHTARI tutuyor.
+  // HTML tarafında | translate pipe'ından geçiriliyorlar.
   errorMessage = '';
   successMessage = '';
+
   messageType: 'success' | 'warning' = 'success';
   isLoading = false;
 
@@ -43,7 +48,7 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: () => {
-        this.errorMessage = 'E-posta veya şifre hatalı.';
+        this.errorMessage = 'AUTH.INVALID_CREDENTIALS';
         this.isLoading = false;
       }
     });

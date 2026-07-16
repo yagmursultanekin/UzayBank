@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AuthService } from '../../../core/services/auth.service';
 import { RegisterRequest } from '../../../core/models/auth.model';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe],
   templateUrl: './register.html',
   styleUrl: './register.scss'
 })
@@ -28,7 +29,7 @@ export class RegisterComponent {
 
   onSubmit(): void {
     if (!this.registerData.email.trim().toLowerCase().endsWith('@uzaybank.com')) {
-      this.errorMessage = 'Yalnızca @uzaybank.com uzantılı e-posta adresleri ile kayıt olunabilir.';
+      this.errorMessage = 'AUTH.EMAIL_DOMAIN_ERROR';
       return;
     }
     this.isLoading = true;
@@ -37,11 +38,11 @@ export class RegisterComponent {
     this.authService.register(this.registerData).subscribe({
       next: () => {
         this.router.navigate(['/login'], {
-          state: { successMessage: 'Kayıt işlemi başarılı.' }
+          state: { successMessage: 'AUTH.REGISTER_SUCCESS' }
         });
       },
       error: () => {
-        this.errorMessage = 'Bu e-posta adresi zaten kayıtlı.';
+        this.errorMessage = 'AUTH.EMAIL_EXISTS';
         this.isLoading = false;
       }
     });
@@ -62,13 +63,14 @@ export class RegisterComponent {
     return strength;
   }
 
+  // Artık hazır metin değil, çeviri ANAHTARI döndürüyor — HTML'de | translate ile çevriliyor
   getStrengthLabel(): string {
     const strength = this.getPasswordStrength();
     if (strength === 0) return '';
-    if (strength <= 2) return 'Zayıf';
-    if (strength <= 3) return 'Orta';
-    if (strength === 4) return 'Güçlü';
-    return 'Çok Güçlü';
+    if (strength <= 2) return 'AUTH.STRENGTH_WEAK';
+    if (strength <= 3) return 'AUTH.STRENGTH_MEDIUM';
+    if (strength === 4) return 'AUTH.STRENGTH_STRONG';
+    return 'AUTH.STRENGTH_VERY_STRONG';
   }
 
   getStrengthClass(): string {

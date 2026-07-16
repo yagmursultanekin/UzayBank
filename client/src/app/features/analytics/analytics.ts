@@ -4,11 +4,12 @@ import { Router } from '@angular/router';
 import { AccountService } from '../../core/services/account.service';
 import { Transaction } from '../../core/models/transaction.model';
 import { SpendingChartComponent } from '../dashboard/spending-chart/spending-chart';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, SpendingChartComponent],
+  imports: [CommonModule, SpendingChartComponent, TranslatePipe],
   templateUrl: './analytics.html',
   styleUrl: './analytics.scss'
 })
@@ -47,7 +48,7 @@ export class AnalyticsComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'İşlemler yüklenemedi.';
+        this.errorMessage = 'COMMON.ERROR';
         this.isLoading = false;
       }
     });

@@ -4,14 +4,34 @@
     "BACK": "Back",
     "ERROR": "An error occurred."
   },
-  "AUTH": {
+ "AUTH": {
     "LOGIN": "Log In",
+    "LOGIN_SUBTITLE": "Sign in to your account",
+    "LOGGING_IN": "Signing in...",
     "REGISTER": "Sign Up",
     "LOGOUT": "Secure Log Out",
     "EMAIL": "Email",
+    "EMAIL_PLACEHOLDER": "example@email.com",
     "PASSWORD": "Password",
+    "PASSWORD_PLACEHOLDER": "Enter your password",
     "FULL_NAME": "Full Name",
-    "SESSION_EXPIRED": "Your session has expired. Please log in again."
+    "NO_ACCOUNT": "Don't have an account?",
+    "GO_REGISTER": "Sign up",
+    "INVALID_CREDENTIALS": "Invalid email or password.",
+    "SESSION_EXPIRED": "Your session has expired. Please log in again.",
+    "REGISTER_SUBTITLE": "Create a new account",
+    "REGISTERING": "Registering...",
+    "FULL_NAME_PLACEHOLDER": "Your Full Name",
+    "PASSWORD_STRONG_PLACEHOLDER": "Choose a strong password",
+    "HAVE_ACCOUNT": "Already have an account?",
+    "GO_LOGIN": "Log in",
+    "REGISTER_SUCCESS": "Registration successful.",
+    "EMAIL_EXISTS": "This email address is already registered.",
+    "EMAIL_DOMAIN_ERROR": "Only email addresses with the @uzaybank.com domain can register.",
+    "STRENGTH_WEAK": "Weak",
+    "STRENGTH_MEDIUM": "Medium",
+    "STRENGTH_STRONG": "Strong",
+    "STRENGTH_VERY_STRONG": "Very Strong"
   },
   "DASHBOARD": {
     "LOADING_ACCOUNTS": "Loading accounts...",
@@ -27,15 +47,43 @@
     "ATM_DESC": "See the nearest VakıfBank ATMs and branches on the map"
   },
   "ANALYTICS": {
-    "TITLE": "Analytics",
-    "NO_DATA": "Not enough data for analysis.",
+    "TITLE": "My Analytics",
+    "LOADING": "Loading data...",
+    "NO_DATA": "Not enough transaction data for analysis.",
     "INCOME": "Income",
-    "EXPENSE": "Expense"
-  },
-  "ACCOUNT": {
-    "IBAN": "IBAN",
+    "EXPENSE": "Expense",
     "BALANCE": "Balance",
+    "INCOMING": "Incoming",
+    "OUTGOING": "Outgoing",
+    "BALANCE_CHANGE": "Balance Change",
+    "INCOME_EXPENSE_DIST": "Income / Expense Distribution"
+  },
+"ACCOUNT": {
+    "DETAIL_TITLE": "Account Details",
+    "ACCOUNT_NO": "Account No",
+    "IBAN": "IBAN",
+    "CURRENCY": "Currency",
+    "CURRENT_BALANCE": "Current Balance",
     "TRANSACTIONS": "Transaction History",
-    "NO_TRANSACTIONS": "No transactions found in the selected date range."
+    "LOADING_TRANSACTIONS": "Loading transactions...",
+    "NO_TRANSACTIONS": "No transactions found in this date range.",
+    "BALANCE": "Balance:",
+    "LOAD_ACCOUNT_ERROR": "Failed to load account details.",
+    "LOAD_TRANSACTIONS_ERROR": "Failed to load transactions."
+  },
+  "ATM": {
+    "TITLE": "Nearest ATMs and Branches",
+    "YOUR_LOCATION": "Your Location",
+    "ALL": "All",
+    "ATM": "ATM",
+    "BRANCH": "Branch",
+    "DISTANCE": "Distance",
+    "LOADING": "Loading...",
+    "NO_RESULTS": "No ATMs or branches found in this range.",
+    "LOAD_ERROR": "Failed to load ATM/branch information.",
+    "KM": "km",
+    "SHOW": "Show:",
+    "ONLY_ATM": "ATMs Only",
+    "ONLY_BRANCH": "Branches Only"
   }
 }

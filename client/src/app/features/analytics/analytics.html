@@ -1,15 +1,15 @@
 <div class="analytics-container">
 
   <header class="analytics-header">
-    <button class="back-btn" (click)="goBack()">← Geri</button>
-    <h1>Analizlerim</h1>
+    <button class="back-btn" (click)="goBack()">← {{ 'COMMON.BACK' | translate }}</button>
+    <h1>{{ 'ANALYTICS.TITLE' | translate }}</h1>
   </header>
 
   <main class="analytics-main">
 
-    <div class="loading" *ngIf="isLoading">Veriler yükleniyor...</div>
+    <div class="loading" *ngIf="isLoading">{{ 'ANALYTICS.LOADING' | translate }}</div>
 
-    <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="error-message" *ngIf="errorMessage">{{ errorMessage | translate }}</div>
 
     <app-spending-chart
       *ngIf="!isLoading && transactions.length > 0"
@@ -17,7 +17,7 @@
     </app-spending-chart>
 
     <div class="empty-state" *ngIf="!isLoading && transactions.length === 0 && !errorMessage">
-      Analiz için yeterli işlem verisi bulunamadı.
+      {{ 'ANALYTICS.NO_DATA' | translate }}
     </div>
 
   </main>

@@ -1,31 +1,31 @@
 <div class="detail-container">
 
   <header class="detail-header">
-    <button class="back-btn" (click)="goBack()">← Geri</button>
-    <h1>Hesap Detayı</h1>
+    <button class="back-btn" (click)="goBack()">← {{ 'COMMON.BACK' | translate }}</button>
+    <h1>{{ 'ACCOUNT.DETAIL_TITLE' | translate }}</h1>
   </header>
 
   <main class="detail-main">
 
     <div class="error-message" *ngIf="errorMessage">
-      {{ errorMessage }}
+      {{ errorMessage | translate }}
     </div>
 
     <section class="account-info-card" *ngIf="account">
       <div class="info-row">
-        <span class="info-label">Hesap No</span>
+        <span class="info-label">{{ 'ACCOUNT.ACCOUNT_NO' | translate }}</span>
         <span class="info-value">{{ account.accountNumber }}</span>
       </div>
       <div class="info-row">
-        <span class="info-label">IBAN</span>
+        <span class="info-label">{{ 'ACCOUNT.IBAN' | translate }}</span>
         <span class="info-value iban">{{ account.iban }}</span>
       </div>
       <div class="info-row">
-        <span class="info-label">Para Birimi</span>
+        <span class="info-label">{{ 'ACCOUNT.CURRENCY' | translate }}</span>
         <span class="info-value">{{ account.currency }}</span>
       </div>
       <div class="balance-row">
-        <span class="info-label">Güncel Bakiye</span>
+        <span class="info-label">{{ 'ACCOUNT.CURRENT_BALANCE' | translate }}</span>
         <span class="balance-value">
           {{ account.balance | number:'1.2-2' }}
           {{ account.currency === 'TRY' ? '₺' : account.currency }}
@@ -35,7 +35,7 @@
 
     <section class="transactions-section">
       <div class="transactions-header">
-        <h3>İşlem Geçmişi</h3>
+        <h3>{{ 'ACCOUNT.TRANSACTIONS' | translate }}</h3>
         <div class="date-filters">
           <input type="date" [(ngModel)]="startDate" (change)="onStartDateChange(endDateInput)" />
           <span>—</span>
@@ -43,10 +43,10 @@
         </div>
       </div>
 
-      <div class="loading" *ngIf="isLoading">İşlemler yükleniyor...</div>
+      <div class="loading" *ngIf="isLoading">{{ 'ACCOUNT.LOADING_TRANSACTIONS' | translate }}</div>
 
       <div class="empty-state" *ngIf="!isLoading && transactions.length === 0">
-        Bu tarih aralığında işlem bulunamadı.
+        {{ 'ACCOUNT.NO_TRANSACTIONS' | translate }}
       </div>
 
       <div class="transaction-list" *ngIf="!isLoading && transactions.length > 0">
@@ -62,7 +62,7 @@
             <p class="tx-amount" [ngClass]="tx.type === TransactionType.Credit ? 'credit' : 'debit'">
               {{ tx.type === TransactionType.Credit ? '+' : '−' }}{{ tx.amount | number:'1.2-2' }}
             </p>
-            <p class="tx-balance">Bakiye: {{ tx.balanceAfterTransaction | number:'1.2-2' }}</p>
+            <p class="tx-balance">{{ 'ACCOUNT.BALANCE' | translate }} {{ tx.balanceAfterTransaction | number:'1.2-2' }}</p>
           </div>
         </div>
       </div>

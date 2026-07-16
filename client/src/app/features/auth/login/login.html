@@ -1,52 +1,58 @@
 <div class="login-container">
   <div class="login-card">
-    
+
+     <app-language-switcher></app-language-switcher>
+     
     <div class="login-header">
       <h1>UzayBank</h1>
-      <p>Hesabınıza giriş yapın</p>
+      <p>{{ 'AUTH.LOGIN_SUBTITLE' | translate }}</p>
     </div>
 
+    <!-- successMessage bir çeviri ANAHTARI tutuyor (ör. 'AUTH.SESSION_EXPIRED'),
+         hazır metin değil — bu yüzden pipe'tan geçiriliyor. -->
     <div [ngClass]="messageType === 'warning' ? 'warning-message' : 'success-message'" *ngIf="successMessage">
-      {{ successMessage }}
+      {{ successMessage | translate }}
     </div>
 
     <form (ngSubmit)="onSubmit()">
-      
+
       <div class="form-group">
-        <label for="email">E-posta</label>
+        <label for="email">{{ 'AUTH.EMAIL' | translate }}</label>
         <input
           id="email"
           type="email"
           [(ngModel)]="loginData.email"
           name="email"
-          placeholder="ornek@email.com"
+          [placeholder]="'AUTH.EMAIL_PLACEHOLDER' | translate"
           required
         />
       </div>
 
       <div class="form-group">
-        <label for="password">Şifre</label>
+        <label for="password">{{ 'AUTH.PASSWORD' | translate }}</label>
         <input
           id="password"
           type="password"
           [(ngModel)]="loginData.password"
           name="password"
-          placeholder="Şifrenizi girin"
+          [placeholder]="'AUTH.PASSWORD_PLACEHOLDER' | translate"
           required
         />
       </div>
 
       <div class="error-message" *ngIf="errorMessage">
-        {{ errorMessage }}
+        {{ errorMessage | translate }}
       </div>
 
       <button type="submit" [disabled]="isLoading">
-        {{ isLoading ? 'Giriş yapılıyor...' : 'Giriş Yap' }}
+        {{ (isLoading ? 'AUTH.LOGGING_IN' : 'AUTH.LOGIN') | translate }}
       </button>
 
       <p class="switch-link">
-  Hesabınız yok mu? <a routerLink="/register">Kayıt olun</a>
-</p>
+        {{ 'AUTH.NO_ACCOUNT' | translate }}
+        <a routerLink="/register">{{ 'AUTH.GO_REGISTER' | translate }}</a>
+      </p>
+
     </form>
 
   </div>

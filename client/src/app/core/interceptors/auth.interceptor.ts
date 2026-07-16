@@ -28,7 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         localStorage.removeItem('token');
         router.navigate(['/login'], {
           state: {
-            successMessage: 'Oturum süreniz doldu. Lütfen tekrar giriş yapın.',
+            successMessage: 'AUTH.SESSION_EXPIRED',
             messageType: 'warning'
           }
         });

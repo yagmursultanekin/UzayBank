@@ -4,14 +4,34 @@
     "BACK": "Geri",
     "ERROR": "Bir hata oluştu."
   },
-  "AUTH": {
+"AUTH": {
     "LOGIN": "Giriş Yap",
+    "LOGIN_SUBTITLE": "Hesabınıza giriş yapın",
+    "LOGGING_IN": "Giriş yapılıyor...",
     "REGISTER": "Kayıt Ol",
     "LOGOUT": "Güvenli Çıkış Yap",
     "EMAIL": "E-posta",
+    "EMAIL_PLACEHOLDER": "ornek@email.com",
     "PASSWORD": "Şifre",
+    "PASSWORD_PLACEHOLDER": "Şifrenizi girin",
     "FULL_NAME": "Ad Soyad",
-    "SESSION_EXPIRED": "Oturum süreniz doldu. Lütfen tekrar giriş yapın."
+    "NO_ACCOUNT": "Hesabınız yok mu?",
+    "GO_REGISTER": "Kayıt olun",
+    "INVALID_CREDENTIALS": "E-posta veya şifre hatalı.",
+    "SESSION_EXPIRED": "Oturum süreniz doldu. Lütfen tekrar giriş yapın.",
+    "REGISTER_SUBTITLE" : "Yeni hesap oluşturun",
+    "REGISTERING": "Kayıt yapılıyor...",
+    "FULL_NAME_PLACEHOLDER": "Adınız Soyadınız",
+    "PASSWORD_STRONG_PLACEHOLDER": "Güçlü bir şifre belirleyin",
+    "HAVE_ACCOUNT": "Zaten hesabınız var mı?",
+    "GO_LOGIN": "Giriş yapın",
+    "REGISTER_SUCCESS": "Kayıt işlemi başarılı.",
+    "EMAIL_EXISTS": "Bu e-posta adresi zaten kayıtlı.",
+    "EMAIL_DOMAIN_ERROR": "Yalnızca @uzaybank.com uzantılı e-posta adresleri ile kayıt olunabilir.",
+    "STRENGTH_WEAK": "Zayıf",
+    "STRENGTH_MEDIUM": "Orta",
+    "STRENGTH_STRONG": "Güçlü",
+    "STRENGTH_VERY_STRONG": "Çok Güçlü"
   },
   "DASHBOARD": {
     "LOADING_ACCOUNTS": "Hesaplar yükleniyor...",
@@ -26,16 +46,44 @@
     "ATM_TITLE": "En Yakın ATM ve Şubeler",
     "ATM_DESC": "Konumunuza en yakın VakıfBank ATM ve şubelerini haritada görün"
   },
-  "ANALYTICS": {
-    "TITLE": "Analiz",
-    "NO_DATA": "Analiz için yeterli veri yok.",
+ "ANALYTICS": {
+    "TITLE": "Analizlerim",
+    "LOADING": "Veriler yükleniyor...",
+    "NO_DATA": "Analiz için yeterli işlem verisi bulunamadı.",
     "INCOME": "Gelir",
-    "EXPENSE": "Gider"
-  },
-  "ACCOUNT": {
-    "IBAN": "IBAN",
+    "EXPENSE": "Gider",
     "BALANCE": "Bakiye",
+    "INCOMING": "Gelen",
+    "OUTGOING": "Giden",
+    "BALANCE_CHANGE": "Bakiye Değişimi",
+    "INCOME_EXPENSE_DIST": "Gelir / Gider Dağılımı"
+  },
+"ACCOUNT": {
+    "DETAIL_TITLE": "Hesap Detayı",
+    "ACCOUNT_NO": "Hesap No",
+    "IBAN": "IBAN",
+    "CURRENCY": "Para Birimi",
+    "CURRENT_BALANCE": "Güncel Bakiye",
     "TRANSACTIONS": "İşlem Geçmişi",
-    "NO_TRANSACTIONS": "Seçilen tarih aralığında işlem bulunamadı."
+    "LOADING_TRANSACTIONS": "İşlemler yükleniyor...",
+    "NO_TRANSACTIONS": "Bu tarih aralığında işlem bulunamadı.",
+    "BALANCE": "Bakiye:",
+    "LOAD_ACCOUNT_ERROR": "Hesap bilgileri yüklenemedi.",
+    "LOAD_TRANSACTIONS_ERROR": "İşlemler yüklenemedi."
+  },
+  "ATM": {
+    "TITLE": "En Yakın ATM ve Şubeler",
+    "YOUR_LOCATION": "Konumunuz",
+    "ALL": "Tümü",
+    "ATM": "ATM",
+    "BRANCH": "Şube",
+    "DISTANCE": "Mesafe",
+    "LOADING": "Yükleniyor...",
+    "NO_RESULTS": "Bu aralıkta ATM veya şube bulunamadı.",
+    "LOAD_ERROR": "ATM/şube bilgileri yüklenemedi.",
+    "KM": "km",
+    "SHOW": "Göster:",
+    "ONLY_ATM": "Sadece ATM'ler",
+    "ONLY_BRANCH": "Sadece Şubeler"
   }
 }

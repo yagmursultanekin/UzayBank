@@ -5,11 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AccountService } from '../../../core/services/account.service';
 import { Account } from '../../../core/models/account.model';
 import { Transaction, TransactionType } from '../../../core/models/transaction.model';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-account-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './account-detail.html',
   styleUrl: './account-detail.scss'
 })
@@ -49,7 +50,7 @@ export class AccountDetailComponent implements OnInit {
         this.account = data;
       },
       error: () => {
-        this.errorMessage = 'Hesap bilgileri yüklenemedi.';
+        this.errorMessage = 'ACCOUNT.LOAD_ACCOUNT_ERROR';
       }
     });
   }
@@ -61,7 +62,7 @@ export class AccountDetailComponent implements OnInit {
         this.isLoading = false;
       },
       error: () => {
-        this.errorMessage = 'İşlemler yüklenemedi.';
+        this.errorMessage = 'ACCOUNT.LOAD_TRANSACTIONS_ERROR';
         this.isLoading = false;
       }
     });
