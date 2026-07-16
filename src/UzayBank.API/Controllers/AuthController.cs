@@ -27,11 +27,11 @@ public class AuthController : ControllerBase
         var email = registerDto.Email?.Trim() ?? "";
 
         if (!email.EndsWith($"@{allowedDomain}", StringComparison.OrdinalIgnoreCase))
-            return BadRequest($"Yalnızca @{allowedDomain} uzantılı e-posta adresleri ile kayıt olunabilir.");
+            return BadRequest(new { code = "EMAIL_DOMAIN_NOT_ALLOWED" });
 
         var result = await _authService.RegisterAsync(registerDto);
         if (result == null)
-            return BadRequest("Bu e-posta adresi zaten kayıtlı.");
+            return BadRequest(new { code = "EMAIL_ALREADY_EXISTS" });
 
         return Ok(result);
     }
@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
     {
         var result = await _authService.LoginAsync(loginDto);
         if (result == null)
-            return Unauthorized("E-posta veya şifre hatalı.");
+            return Unauthorized(new { code = "INVALID_CREDENTIALS" });
 
         return Ok(result);
     }
@@ -50,17 +50,15 @@ public class AuthController : ControllerBase
     [Authorize]   // Çıkış yapmak için geçerli bir token gerekli
     public async Task<IActionResult> Logout()
     {
-        // Token'ın kimliği ve son kullanma tarihi — ikisi de token'ın içinde
         var jti = User.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
         var expClaim = User.FindFirst(JwtRegisteredClaimNames.Exp)?.Value;
 
         if (jti == null || expClaim == null)
-            return BadRequest("Token bilgisi okunamadı.");
+            return BadRequest(new { code = "INVALID_TOKEN" });
 
-        // exp, Unix timestamp (saniye) olarak gelir
         var expiresAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expClaim)).UtcDateTime;
 
         await _authService.LogoutAsync(jti, expiresAt);
-        return Ok(new { message = "Çıkış yapıldı." });
+        return Ok(new { code = "LOGOUT_SUCCESS" });
     }
 }

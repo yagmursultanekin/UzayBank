@@ -27,7 +27,7 @@ export class RegisterComponent {
     private router: Router
   ) {}
 
-  onSubmit(): void {
+onSubmit(): void {
     if (!this.registerData.email.trim().toLowerCase().endsWith('@uzaybank.com')) {
       this.errorMessage = 'AUTH.EMAIL_DOMAIN_ERROR';
       return;
@@ -41,11 +41,16 @@ export class RegisterComponent {
           state: { successMessage: 'AUTH.REGISTER_SUCCESS' }
         });
       },
-      error: () => {
-        this.errorMessage = 'AUTH.EMAIL_EXISTS';
+      error: (err) => {
+        this.errorMessage = this.errorKey(err);
         this.isLoading = false;
       }
     });
+  }
+
+  private errorKey(err: any): string{
+    const code = err?.error?.code;
+    return code ? `ERRORS.${code}` : 'COMMON.ERROR';
   }
 
   getPasswordStrength(): number {

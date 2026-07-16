@@ -47,10 +47,14 @@ export class LoginComponent {
         this.authService.saveToken(response.token);
         this.router.navigate(['/dashboard']);
       },
-      error: () => {
-        this.errorMessage = 'AUTH.INVALID_CREDENTIALS';
+      error: (err) => {
+        this.errorMessage = this.errorKey(err);
         this.isLoading = false;
       }
     });
+  }
+    private errorKey(err: any): string {
+    const code = err?.error?.code;
+    return code ? `ERRORS.${code}` : 'COMMON.ERROR';
   }
 }

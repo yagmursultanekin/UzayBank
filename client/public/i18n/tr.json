@@ -85,5 +85,10 @@
     "SHOW": "Göster:",
     "ONLY_ATM": "Sadece ATM'ler",
     "ONLY_BRANCH": "Sadece Şubeler"
+  },
+  "ERRORS": {
+    "EMAIL_DOMAIN_NOT_ALLOWED": "Yalnızca @uzaybank.com uzantılı e-posta adresleri ile kayıt olunabilir.",
+    "EMAIL_ALREADY_EXISTS": "Bu e-posta adresi zaten kayıtlı.",
+    "INVALID_CREDENTIALS": "E-posta veya şifre hatalı."
   }
 }

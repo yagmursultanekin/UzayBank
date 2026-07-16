@@ -85,5 +85,10 @@
     "SHOW": "Show:",
     "ONLY_ATM": "ATMs Only",
     "ONLY_BRANCH": "Branches Only"
+  },
+  "ERRORS": {
+    "EMAIL_DOMAIN_NOT_ALLOWED": "Only email addresses with the @uzaybank.com domain can register.",
+    "EMAIL_ALREADY_EXISTS": "This email address is already registered.",
+    "INVALID_CREDENTIALS": "Invalid email or password."
   }
 }
