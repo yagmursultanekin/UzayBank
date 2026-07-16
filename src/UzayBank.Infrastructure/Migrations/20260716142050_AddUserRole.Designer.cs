@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using UzayBank.Infrastructure.Persistence;
 
@@ -11,9 +12,11 @@ using UzayBank.Infrastructure.Persistence;
 namespace UzayBank.Infrastructure.Migrations
 {
     [DbContext(typeof(UzayBankDbContext))]
-    partial class UzayBankDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260716142050_AddUserRole")]
+    partial class AddUserRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

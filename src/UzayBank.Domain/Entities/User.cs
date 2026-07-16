@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UzayBank.Domain.Enums;
 
 namespace UzayBank.Domain.Entities;
 
@@ -14,4 +15,5 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public ICollection<Account> Accounts { get; set; } = new List<Account>();
+    public UserRole Role { get; set; } = UserRole.Customer;
 }

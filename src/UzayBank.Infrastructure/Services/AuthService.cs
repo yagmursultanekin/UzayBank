@@ -7,6 +7,7 @@ using UzayBank.Infrastructure.Persistence;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using UzayBank.Domain.Enums;
 
 namespace UzayBank.Infrastructure.Services;
 
@@ -64,7 +65,7 @@ public class AuthService : IAuthService
         return await Task.FromResult(true);
     }
 
-    private AuthResponseDto GenerateToken(User user)
+    private AuthResponseDto GenerateToken(User user) //jwt oluşturulduğu yer
     {
         var secretKey = _configuration["Jwt:SecretKey"]!;
         var issuer = _configuration["Jwt:Issuer"];
@@ -80,7 +81,9 @@ public class AuthService : IAuthService
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Name, user.FullName),
             // Her token'a benzersiz kimlik — çıkışta bu id kara listeye yazılacak
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            // Kullanıcının rolü — [Authorize(Roles="Admin")] bunu okuyacak
+            new Claim(ClaimTypes.Role, user.Role.ToString())
         };
 
         var token = new JwtSecurityToken(

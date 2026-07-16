@@ -12,4 +12,9 @@ public interface IUserAccountRepository
 
     /// <summary>Kullanıcıya hesap bağlar. Zaten bağlıysa hiçbir şey yapmaz.</summary>
     Task LinkAsync(int userId, string accountNumber, string iban, string currency);
+    /// <summary>Bu hesap HERHANGİ bir kullanıcıya atanmış mı? (tek kişiye kuralı için)</summary>
+    Task<bool> IsAccountTakenAsync(string accountNumber);
+
+    /// <summary>Atamayı kaldırır.</summary>
+    Task UnlinkAsync(string accountNumber);
 }

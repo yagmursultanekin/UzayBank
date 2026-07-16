@@ -44,4 +44,22 @@ public class UserAccountRepository : IUserAccountRepository
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task<bool> IsAccountTakenAsync(string accountNumber)
+    {
+        return await _context.UserAccounts
+            .AnyAsync(ua => ua.AccountNumber == accountNumber);
+    }
+
+    public async Task UnlinkAsync(string accountNumber)
+    {
+        var link = await _context.UserAccounts
+            .FirstOrDefaultAsync(ua => ua.AccountNumber == accountNumber);
+
+        if (link != null)
+        {
+            _context.UserAccounts.Remove(link);
+            await _context.SaveChangesAsync();
+        }
+    }
 }
