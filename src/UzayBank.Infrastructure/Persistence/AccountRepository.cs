@@ -47,4 +47,8 @@ public class AccountRepository : IAccountRepository //bu sınıf sözleşmeyi im
         _context.Accounts.Update(account);
         await _context.SaveChangesAsync();
     }
+    public async Task<List<Account>> GetAllAsync()
+    {
+        return await _context.Accounts.ToListAsync();
+    }
 }

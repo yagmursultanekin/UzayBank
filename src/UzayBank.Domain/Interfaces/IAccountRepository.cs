@@ -14,5 +14,6 @@ public interface IAccountRepository
     Task<List<Transaction>> GetTransactionsAsync(int accountId, DateTime startDate, DateTime endDate);
     Task<bool> IsAccountOwnedByUserAsync(int accountId, int userId);
     Task AddTransactionAsync(Transaction transaction, Account account);
+    Task<List<Account>> GetAllAsync();
 
 }

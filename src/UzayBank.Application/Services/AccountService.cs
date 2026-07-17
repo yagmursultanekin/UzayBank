@@ -89,4 +89,10 @@ public class AccountService : IAccountService
 
         return all.OrderByDescending(t => t.TransactionDate).ToList();
     }
+    public async Task<List<AccountDto>> GetAllAccountsForAdminAsync()
+    {
+        // MSSQL modunda tüm hesaplar zaten DB'de — filtresiz döndür
+        return await GetAccountsByUserIdAsync(0);   // ya da tüm hesapları çeken mevcut mantık
+    }
+
 }

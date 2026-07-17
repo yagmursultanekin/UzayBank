@@ -124,36 +124,27 @@ public class VakifBankAccountService : IAccountService
     /// GEÇİCİ: Eşleme stratejisi belirlenmediği için kullanıcı bazlı filtreleme devre dışı.
     /// UserAccounts tablosu ve repository hazır — karar verilince yorum satırları açılacak.
     /// </summary>
+
     public async Task<List<AccountDto>> GetAccountsByUserIdAsync(int userId)
     {
         var allAccounts = await GetAllAccountsFromApiAsync();
 
-        // TODO: Eşleme stratejisi seçilince aç
-        // var linkedNumbers = await _userAccounts.GetAccountNumbersByUserIdAsync(userId);
-        // return allAccounts.Where(a => linkedNumbers.Contains(a.AccountNumber)).ToList();
-
-        return allAccounts;
+        // Kullanıcıya atanmış hesap numaralarını al, sadece onları döndür
+        var linkedNumbers = await _userAccounts.GetAccountNumbersByUserIdAsync(userId);
+        return allAccounts.Where(a => linkedNumbers.Contains(a.AccountNumber)).ToList();
     }
-
-    public async Task<AccountDto?> GetAccountByIdAsync(int accountId)
-    {
-        var accounts = await GetAllAccountsFromApiAsync();
-        return accounts.FirstOrDefault(a => a.Id == accountId);
-    }
-
     /// <summary>
     /// GEÇİCİ: Sandbox tek kurumsal kimlik verdiği ve eşleme stratejisi
     /// belirlenmediği için sahiplik kontrolü şu an devre dışı.
     /// </summary>
     public async Task<bool> IsAccountOwnedByUserAsync(int accountId, int userId)
     {
-        // TODO: Eşleme stratejisi seçilince aç
-        // var allAccounts = await GetAllAccountsFromApiAsync();
-        // var account = allAccounts.FirstOrDefault(a => a.Id == accountId);
-        // if (account == null) return false;
-        // return await _userAccounts.IsLinkedAsync(userId, account.AccountNumber);
+        var allAccounts = await GetAllAccountsFromApiAsync();
+        var account = allAccounts.FirstOrDefault(a => a.Id == accountId);
+        if (account == null)
+            return false;
 
-        return await Task.FromResult(true);
+        return await _userAccounts.IsLinkedAsync(userId, account.AccountNumber);
     }
 
     public async Task<List<TransactionDto>> GetTransactionsByAccountIdAsync(
@@ -252,5 +243,16 @@ public class VakifBankAccountService : IAccountService
             .SelectMany(list => list)
             .OrderByDescending(t => t.TransactionDate)
             .ToList();
+    }
+
+    public async Task<AccountDto?> GetAccountByIdAsync(int accountId)
+    {
+        var accounts = await GetAllAccountsFromApiAsync();
+        return accounts.FirstOrDefault(a => a.Id == accountId);
+    }
+
+    public async Task<List<AccountDto>> GetAllAccountsForAdminAsync()
+    {
+        return await GetAllAccountsFromApiAsync();
     }
 }

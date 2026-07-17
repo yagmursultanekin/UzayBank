@@ -58,6 +58,7 @@ builder.Services.AddScoped<IAccountService, VakifBankAccountService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IBranchService, VakifBankBranchService>();
 builder.Services.AddScoped<IMarketService, VakifBankMarketService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // Çıkış yapılmış token'ların kara listesi
 builder.Services.AddMemoryCache();
