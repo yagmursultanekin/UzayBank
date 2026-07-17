@@ -96,4 +96,12 @@ export class DashboardComponent implements OnInit {
   goToNearestAtm(): void {
     this.router.navigate(['/nearest-atm']);
   }
+  
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  goToAdmin(): void {
+    this.router.navigate(['/admin']);
+  }
 }

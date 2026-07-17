@@ -61,4 +61,22 @@ export class AuthService {
         localStorage.removeItem('token');
         this.router.navigate(['/login']);
     }
+
+    isAdmin(): boolean {
+  const token = this.getToken();
+  if (!token) return false;
+
+  try {
+    // JWT üç parçalı: header.payload.signature — ortadaki payload'ı çöz
+    const payload = JSON.parse(atob(token.split('.')[1]));
+
+    // Rol claim'i — ASP.NET bunu uzun bir URI anahtarıyla yazar
+    const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+                 || payload['role'];
+
+    return role === 'Admin';
+  } catch {
+    return false;
+  }
+}
 }

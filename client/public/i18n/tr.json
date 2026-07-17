@@ -56,7 +56,8 @@
     "INCOMING": "Gelen",
     "OUTGOING": "Giden",
     "BALANCE_CHANGE": "Bakiye Değişimi",
-    "INCOME_EXPENSE_DIST": "Gelir / Gider Dağılımı"
+    "INCOME_EXPENSE_DIST": "Gelir / Gider Dağılımı",
+    "NET": "Net"
   },
 "ACCOUNT": {
     "DETAIL_TITLE": "Hesap Detayı",
@@ -89,6 +90,22 @@
   "ERRORS": {
     "EMAIL_DOMAIN_NOT_ALLOWED": "Yalnızca @uzaybank.com uzantılı e-posta adresleri ile kayıt olunabilir.",
     "EMAIL_ALREADY_EXISTS": "Bu e-posta adresi zaten kayıtlı.",
-    "INVALID_CREDENTIALS": "E-posta veya şifre hatalı."
+    "INVALID_CREDENTIALS": "E-posta veya şifre hatalı.",
+    "ACCOUNT_ALREADY_ASSIGNED": "Bu hesap zaten başka bir kullanıcıya atanmış."
+  },
+
+  "ADMIN": {
+    "TITLE": "Yönetim Paneli",
+    "PANEL": "Yönetim Paneli",
+    "ACCOUNT_NO": "Hesap No",
+    "IBAN": "IBAN",
+    "ASSIGNED_TO": "Atanan Kullanıcı",
+    "ACTION": "İşlem",
+    "ASSIGN": "Ata",
+    "UNASSIGN": "Kaldır",
+    "SELECT_USER": "Kullanıcı seçin",
+    "SELECT_USER_FIRST": "Lütfen önce bir kullanıcı seçin.",
+    "ASSIGN_SUCCESS": "Hesap başarıyla atandı.",
+    "UNASSIGN_SUCCESS": "Hesap ataması kaldırıldı."
   }
 }

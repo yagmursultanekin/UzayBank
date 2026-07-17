@@ -11,5 +11,21 @@
     <div class="chart-wrapper">
       <canvas #doughnutCanvas></canvas>
     </div>
+
+    <!-- Grafik altı özet: kesin rakamlar -->
+    <div class="summary-totals">
+      <div class="total-item income">
+        <span class="label">{{ 'ANALYTICS.INCOMING' | translate }}</span>
+        <span class="value">+{{ totalIncome | number:'1.2-2' }} ₺</span>
+      </div>
+      <div class="total-item expense">
+        <span class="label">{{ 'ANALYTICS.OUTGOING' | translate }}</span>
+        <span class="value">−{{ totalExpense | number:'1.2-2' }} ₺</span>
+      </div>
+      <div class="total-item net">
+        <span class="label">{{ 'ANALYTICS.NET' | translate }}</span>
+        <span class="value">{{ (totalIncome - totalExpense) | number:'1.2-2' }} ₺</span>
+      </div>
+    </div>
   </div>
 </div>

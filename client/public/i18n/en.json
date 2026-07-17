@@ -56,7 +56,8 @@
     "INCOMING": "Incoming",
     "OUTGOING": "Outgoing",
     "BALANCE_CHANGE": "Balance Change",
-    "INCOME_EXPENSE_DIST": "Income / Expense Distribution"
+    "INCOME_EXPENSE_DIST": "Income / Expense Distribution",
+    "NET": "Net"
   },
 "ACCOUNT": {
     "DETAIL_TITLE": "Account Details",
@@ -89,6 +90,21 @@
   "ERRORS": {
     "EMAIL_DOMAIN_NOT_ALLOWED": "Only email addresses with the @uzaybank.com domain can register.",
     "EMAIL_ALREADY_EXISTS": "This email address is already registered.",
-    "INVALID_CREDENTIALS": "Invalid email or password."
+    "INVALID_CREDENTIALS": "Invalid email or password.",
+    "ACCOUNT_ALREADY_ASSIGNED": "This account is already assigned to another user."
+  },
+  "ADMIN": {
+    "TITLE": "Admin Panel",
+    "PANEL": "Admin Panel",
+    "ACCOUNT_NO": "Account No",
+    "IBAN": "IBAN",
+    "ASSIGNED_TO": "Assigned User",
+    "ACTION": "Action",
+    "ASSIGN": "Assign",
+    "UNASSIGN": "Remove",
+    "SELECT_USER": "Select user",
+    "SELECT_USER_FIRST": "Please select a user first.",
+    "ASSIGN_SUCCESS": "Account assigned successfully.",
+    "UNASSIGN_SUCCESS": "Account assignment removed."
   }
 }

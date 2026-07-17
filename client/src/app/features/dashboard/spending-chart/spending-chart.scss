@@ -26,3 +26,34 @@
   height: 260px;
   position: relative;
 }
+
+.summary-totals {
+  display: flex;
+  flex-direction: column;      /* yan yana değil, alt alta */
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+
+  .total-item {
+    display: flex;
+    flex-direction: row;              /* etiket solda, rakam sağda */
+    justify-content: space-between;
+    align-items: center;
+
+    .label {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .value {
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    &.income .value { color: #2ecc71; }
+    &.expense .value { color: #e53e3e; }
+    &.net .value { color: #0f3460; }
+  }
+}

@@ -6,6 +6,9 @@
     </div>
     <div class="header-right">
       <app-language-switcher></app-language-switcher>
+      <button *ngIf="isAdmin" class="admin-btn" (click)="goToAdmin()">
+        {{ 'ADMIN.PANEL' | translate }}
+      </button>
       <button class="logout-btn" (click)="logout()">{{ 'AUTH.LOGOUT' | translate }}</button>
     </div>
   </header>

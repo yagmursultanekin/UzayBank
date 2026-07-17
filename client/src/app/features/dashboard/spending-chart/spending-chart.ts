@@ -14,6 +14,8 @@ Chart.register(...registerables);
 })
 export class SpendingChartComponent implements AfterViewInit, OnChanges {
   @Input() transactions: Transaction[] = [];
+  totalIncome = 0;
+  totalExpense = 0;
 
   @ViewChild('lineCanvas') lineCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('doughnutCanvas') doughnutCanvas!: ElementRef<HTMLCanvasElement>;
@@ -87,16 +89,16 @@ export class SpendingChartComponent implements AfterViewInit, OnChanges {
     });
   }
 
-  private buildDoughnutChart(): void {
+private buildDoughnutChart(): void {
     this.doughnutChart?.destroy();
 
-    const totalCredit = this.transactions
+    this.totalIncome = this.transactions
       .filter(t => t.type === TransactionType.Credit)
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const totalDebit = this.transactions
+    this.totalExpense = this.transactions
       .filter(t => t.type === TransactionType.Debit)
-      .reduce((sum, t) => sum + t.amount, 0);
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0);
 
     this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
       type: 'doughnut',
@@ -106,7 +108,7 @@ export class SpendingChartComponent implements AfterViewInit, OnChanges {
           this.translate.instant('ANALYTICS.OUTGOING')
         ],
         datasets: [{
-          data: [totalCredit, totalDebit],
+          data: [this.totalIncome, this.totalExpense],
           backgroundColor: ['#2ecc71', '#e53e3e'],
           borderWidth: 0
         }]

@@ -1,0 +1,69 @@
+<div class="admin-container">
+
+  <header class="admin-header">
+    <div class="header-left">
+      <button class="back-btn" (click)="goBack()">← {{ 'COMMON.BACK' | translate }}</button>
+      <h1>{{ 'ADMIN.TITLE' | translate }}</h1>
+    </div>
+    <div class="header-right">
+      <app-language-switcher></app-language-switcher>
+      <button class="logout-btn" (click)="logout()">{{ 'AUTH.LOGOUT' | translate }}</button>
+    </div>
+  </header>
+
+  <main class="admin-main">
+
+    <div class="message" [ngClass]="messageType" *ngIf="message">
+      {{ message | translate }}
+    </div>
+
+    <div class="loading" *ngIf="isLoading">{{ 'COMMON.LOADING' | translate }}</div>
+
+    <table class="assignment-table" *ngIf="!isLoading">
+      <thead>
+        <tr>
+          <th>{{ 'ADMIN.ACCOUNT_NO' | translate }}</th>
+          <th>{{ 'ADMIN.IBAN' | translate }}</th>
+          <th>{{ 'ADMIN.ASSIGNED_TO' | translate }}</th>
+          <th>{{ 'ADMIN.ACTION' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of assignments">
+          <td>{{ a.accountNumber }}</td>
+          <td class="iban">{{ a.iban }}</td>
+
+          <!-- Atanmışsa kullanıcı e-postası, değilse boş -->
+          <td>
+            <span *ngIf="a.assignedUserEmail" class="assigned">{{ a.assignedUserEmail }}</span>
+            <span *ngIf="!a.assignedUserEmail" class="unassigned">—</span>
+          </td>
+
+          <td>
+            <!-- Atanmışsa: kaldır butonu -->
+            <button
+              *ngIf="a.assignedUserEmail"
+              class="unassign-btn"
+              (click)="unassign(a.accountNumber)">
+              {{ 'ADMIN.UNASSIGN' | translate }}
+            </button>
+
+            <!-- Atanmamışsa: kullanıcı seç + ata -->
+            <div class="assign-controls" *ngIf="!a.assignedUserEmail">
+              <select [(ngModel)]="selectedUser[a.accountNumber]">
+                <option [ngValue]="undefined">{{ 'ADMIN.SELECT_USER' | translate }}</option>
+                <option *ngFor="let u of users" [ngValue]="u.id">
+                  {{ u.email }}
+                </option>
+              </select>
+              <button class="assign-btn" (click)="assign(a.accountNumber)">
+                {{ 'ADMIN.ASSIGN' | translate }}
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </main>
+</div>
