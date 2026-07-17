@@ -15,4 +15,7 @@ public interface IAdminService
 
     /// <summary>Bir hesabın atamasını kaldırır.</summary>
     Task UnassignAccountAsync(string accountNumber);
+
+    /// <summary>Tüm kullanıcıları listeler (admin, hesap atarken seçim yapabilsin).</summary>
+    Task<List<UserListDto>> GetAllUsersAsync();
 }

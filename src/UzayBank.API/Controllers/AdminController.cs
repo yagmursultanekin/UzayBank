@@ -45,4 +45,12 @@ public class AdminController : ControllerBase
         await _adminService.UnassignAccountAsync(dto.AccountNumber);
         return Ok(new { code = "UNASSIGN_SUCCESS" });
     }
+
+    /// <summary>Hesap atamak için kullanıcı listesi.</summary>
+    [HttpGet("users")]
+    public async Task<IActionResult> GetUsers()
+    {
+        var users = await _adminService.GetAllUsersAsync();
+        return Ok(users);
+    }
 }

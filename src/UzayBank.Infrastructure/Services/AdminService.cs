@@ -69,4 +69,17 @@ public class AdminService : IAdminService
     {
         await _userAccounts.UnlinkAsync(accountNumber);
     }
+
+    public async Task<List<UserListDto>> GetAllUsersAsync()
+    {
+        return await _context.Users
+            .Select(u => new UserListDto
+            {
+                Id = u.Id,
+                FullName = u.FullName,
+                Email = u.Email,
+                Role = u.Role.ToString()
+            })
+            .ToListAsync();
+    }
 }
