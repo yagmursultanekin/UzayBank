@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UzayBank.Domain.Enums;
 
 namespace UzayBank.Domain.Entities;
 
@@ -17,4 +18,8 @@ public class Account
     public DateTime CreatedAt { get; set; }
     public int UserId { get; set; }
     public User User { get; set; } = null!;
+
+    // Bu hesap UzayBank'ın kendi (yapay) hesabı — VakıfBank'tan gelmiyor.
+    // İleride farklı hesap türleri eklenirse ayrım için.
+    public AccountSource Source { get; set; } = AccountSource.UzayBank;
 }
