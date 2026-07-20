@@ -1,0 +1,56 @@
+<div class="detail-container">
+
+  <header class="detail-header">
+    <button class="back-btn" (click)="goBack()">← {{ 'COMMON.BACK' | translate }}</button>
+    <h1>{{ 'UZAY.DETAIL_TITLE' | translate }}</h1>
+  </header>
+
+  <main class="detail-main">
+
+    <section class="account-info-card" *ngIf="account">
+      <div class="info-row">
+        <span class="info-label">{{ 'ACCOUNT.ACCOUNT_NO' | translate }}</span>
+        <span class="info-value">{{ account.accountNumber }}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">{{ 'ACCOUNT.IBAN' | translate }}</span>
+        <span class="info-value iban">{{ account.iban }}</span>
+      </div>
+      <div class="balance-row">
+        <span class="info-label">{{ 'ACCOUNT.CURRENT_BALANCE' | translate }}</span>
+        <span class="balance-value">{{ account.balance | number:'1.2-2' }} ₺</span>
+      </div>
+    </section>
+
+    <section class="transactions-section">
+      <h3>{{ 'ACCOUNT.TRANSACTIONS' | translate }}</h3>
+
+      <div class="loading" *ngIf="isLoading">
+        {{ 'ACCOUNT.LOADING_TRANSACTIONS' | translate }}
+      </div>
+
+      <div class="empty-state" *ngIf="!isLoading && transactions.length === 0">
+        {{ 'UZAY.NO_TRANSACTIONS' | translate }}
+      </div>
+
+      <div class="transaction-list" *ngIf="!isLoading && transactions.length > 0">
+        <div class="transaction-item" *ngFor="let tx of transactions">
+          <div class="tx-icon" [ngClass]="tx.type === TransactionType.Credit ? 'credit' : 'debit'">
+            {{ tx.type === TransactionType.Credit ? '↓' : '↑' }}
+          </div>
+          <div class="tx-info">
+            <p class="tx-description">{{ tx.description }}</p>
+            <p class="tx-date">{{ tx.transactionDate | date:'dd.MM.yyyy HH:mm' }}</p>
+          </div>
+          <div class="tx-amounts">
+            <p class="tx-amount" [ngClass]="tx.type === TransactionType.Credit ? 'credit' : 'debit'">
+              {{ tx.type === TransactionType.Credit ? '+' : '−' }}{{ (tx.amount < 0 ? -tx.amount : tx.amount) | number:'1.2-2' }} ₺
+            </p>
+            <p class="tx-balance">{{ 'ACCOUNT.BALANCE' | translate }} {{ tx.balanceAfterTransaction | number:'1.2-2' }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>

@@ -133,6 +133,9 @@ export class DashboardComponent implements OnInit {
   goToAccount(accountId: number): void {
     this.router.navigate(['/accounts', accountId]);
   }
+  goToUzayAccount(accountId: number): void {
+    this.router.navigate(['/uzay-accounts', accountId]);
+  }
 
   goToAnalytics(): void {
     this.router.navigate(['/analytics']);

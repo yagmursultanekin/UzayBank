@@ -115,5 +115,10 @@
     "SELECT_USER_FIRST": "Lütfen önce bir kullanıcı seçin.",
     "ASSIGN_SUCCESS": "Hesap başarıyla atandı.",
     "UNASSIGN_SUCCESS": "Hesap ataması kaldırıldı."
+  },
+
+  "UZAY": {
+    "DETAIL_TITLE": "UzayBank Hesap Detayı",
+    "NO_TRANSACTIONS": "Bu hesapta henüz işlem yok."
   }
 }

@@ -98,7 +98,7 @@
         </div>
 
         <div class="account-grid" *ngIf="uzayAccounts.length > 0">
-          <div class="account-card uzay-card" *ngFor="let account of uzayAccounts">
+          <div class="account-card uzay-card" *ngFor="let account of uzayAccounts" (click)="goToUzayAccount(account.id)">
             <div class="account-header">
               <span class="account-currency">{{ account.currency }}</span>
             </div>
@@ -115,7 +115,6 @@
 
   </main>
 
-  <!-- Hesap açma onay modalı -->
   <div class="modal-overlay" *ngIf="showConfirmModal" (click)="cancelCreateAccount()">
     <div class="modal-box" (click)="$event.stopPropagation()">
       <h3>{{ 'DASHBOARD.NEW_ACCOUNT' | translate }}</h3>

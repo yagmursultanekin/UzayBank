@@ -114,5 +114,9 @@
     "SELECT_USER_FIRST": "Please select a user first.",
     "ASSIGN_SUCCESS": "Account assigned successfully.",
     "UNASSIGN_SUCCESS": "Account assignment removed."
+  },
+  "UZAY": {
+    "DETAIL_TITLE": "UzayBank Account Details",
+    "NO_TRANSACTIONS": "No transactions in this account yet."
   }
 }

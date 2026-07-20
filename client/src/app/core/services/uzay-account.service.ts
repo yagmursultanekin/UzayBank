@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Account } from '../models/account.model';
+import { Transaction } from '../models/transaction.model';
 
 @Injectable({ providedIn: 'root' })
 export class UzayAccountService {
@@ -15,5 +16,9 @@ export class UzayAccountService {
 
   createAccount(currency: string = 'TL'): Observable<Account> {
     return this.http.post<Account>(this.apiUrl, { currency });
+  }
+
+  getTransactions(accountId: number): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(`${this.apiUrl}/${accountId}/transactions`);
   }
 }

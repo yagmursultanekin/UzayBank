@@ -48,4 +48,11 @@ export const routes: Routes = [
   loadComponent: () => import('./features/admin/admin').then(m => m.AdminComponent),
   canActivate: [authGuard,adminGuard]
 },
+
+{
+    path: 'uzay-accounts/:id',
+    loadComponent: () =>
+      import('./features/uzay-account/uzay-account-detail').then(m => m.UzayAccountDetailComponent),
+    canActivate: [authGuard]
+  },
 ];
