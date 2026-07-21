@@ -12,10 +12,14 @@ namespace UzayBank.API.Controllers;
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
+    private readonly IUzayAccountService _uzayAccountService;
 
-    public AccountController(IAccountService accountService)
+    public AccountController(
+        IAccountService accountService,
+        IUzayAccountService uzayAccountService)
     {
         _accountService = accountService;
+        _uzayAccountService = uzayAccountService;
     }
 
     private int? GetUserId()
@@ -52,20 +56,47 @@ public class AccountController : ControllerBase
 
         return Ok(account);
     }
+
     [HttpGet("all-transactions")]
     public async Task<IActionResult> GetAllTransactions(
-    [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
     {
         var userId = GetUserId();
         if (userId == null)
             return Unauthorized();
 
-        // Sahiplik kontrolüne gerek yok — servis zaten sadece bu kullanıcının
-        // hesaplarını dolaşıyor. userId token'dan geliyor, istemciden değil.
-        var transactions = await _accountService.GetAllTransactionsByUserIdAsync(
+        // Hibrit model: analiz her iki hesap kaynağını da kapsamalı.
+        //   1) Banka hesapları  → IAccountService (VakıfBank API veya MSSQL)
+        //   2) UzayBank hesapları → IUzayAccountService (her zaman MSSQL)
+        //
+        // Daha önce yalnızca birincisi çekildiği için MSSQL'deki işlemler
+        // (seed data ve kullanıcının kendi UzayBank hareketleri) analize girmiyordu.
+        //
+        // Birleştirme şimdilik controller'da; katman refactor'ünde bu mantık
+        // Application katmanına taşınacak.
+
+        var bankTransactions = await _accountService.GetAllTransactionsByUserIdAsync(
             userId.Value, startDate, endDate);
 
-        return Ok(transactions);
+        var uzayAccounts = await _uzayAccountService.GetMyAccountsAsync(userId.Value);
+
+        var uzayTransactions = new List<TransactionDto>();
+        foreach (var account in uzayAccounts)
+        {
+            var txs = await _uzayAccountService.GetTransactionsAsync(account.Id, userId.Value);
+
+            // IUzayAccountService henüz tarih filtresi desteklemiyor,
+            // bu yüzden süzme işlemi burada yapılıyor.
+            uzayTransactions.AddRange(
+     txs.Where(t => t.TransactionDate >= startDate && t.TransactionDate < endDate.AddDays(1)));
+        }
+
+        var combined = bankTransactions
+            .Concat(uzayTransactions)
+            .OrderByDescending(t => t.TransactionDate)
+            .ToList();
+
+        return Ok(combined);
     }
 
     [HttpGet("{accountId}/transactions")]

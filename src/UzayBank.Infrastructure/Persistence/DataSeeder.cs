@@ -15,7 +15,7 @@ public static class DataSeeder
         var user = new User
         {
             FullName = "Yağmur Sultan",
-            Email = "yagmur@nexbank.com",
+            Email = "yagmur@uzaybank.com",
             PasswordHash = BCrypt.Net.BCrypt.HashPassword("Test123!"),
             CreatedAt = DateTime.UtcNow
         };

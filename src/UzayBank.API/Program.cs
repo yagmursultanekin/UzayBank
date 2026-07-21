@@ -27,28 +27,34 @@ builder.Services.AddControllers();
 // Veritabanı
 builder.Services.AddDbContext<UzayBankDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-var vakifBankCookies = new System.Net.CookieContainer();
+
+// VakıfBank API'sine giden HTTP istemcilerinin ortak handler'ı.
+//
+// NOT: Sertifika doğrulaması SADECE Development ortamında devre dışı bırakılır.
+// Sandbox ortamının sertifika zinciri yerel makinede güvenilmediği için bu gerekli;
+// ancak production'da açık bırakılırsa trafik araya girme (MITM) saldırısına açık olur.
+// Bu yüzden ortam kontrolü ile sınırlandırıyoruz — kod aynı, davranış ortama bağlı.
+var isDevelopment = builder.Environment.IsDevelopment();
+
+// Her istemci kendi CookieContainer'ını alır.
+// Ortak (paylaşımlı) bir container thread-safe değildir ve eşzamanlı
+// isteklerde çerezlerin birbirine karışmasına yol açabilir.
+HttpClientHandler CreateVakifBankHandler() => new()
+{
+    UseProxy = false,
+    UseCookies = true,
+    CookieContainer = new System.Net.CookieContainer(),
+    AutomaticDecompression = System.Net.DecompressionMethods.All,
+    ServerCertificateCustomValidationCallback = isDevelopment
+        ? HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+        : null
+};
 
 builder.Services.AddHttpClient<VakifBankAuthService>()
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-    {
-        UseProxy = false,
-        UseCookies = true,
-        CookieContainer = vakifBankCookies,
-        AutomaticDecompression = System.Net.DecompressionMethods.All,
-        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-    });
+    .ConfigurePrimaryHttpMessageHandler(CreateVakifBankHandler);
 
 builder.Services.AddHttpClient<VakifBankAccountService>()
-    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
-    {
-        UseProxy = false,
-        UseCookies = true,
-        CookieContainer = vakifBankCookies,
-        AutomaticDecompression = System.Net.DecompressionMethods.All,
-        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-    });
-//rest json 
+    .ConfigurePrimaryHttpMessageHandler(CreateVakifBankHandler);
 // Repository kayıtları
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IUserAccountRepository, UserAccountRepository>();
