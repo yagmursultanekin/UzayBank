@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/UzayBank.Tests/UzayBank.Tests.csproj" />
+  </Folder>
   <Project Path="src/UzayBank.API/UzayBank.API.csproj" Id="cf16f4bc-c19f-4fc8-8ce8-746a89ddfe5c" />
   <Project Path="src/UzayBank.Application/UzayBank.Application.csproj" Id="c0535902-2055-4b0e-a08b-763cfc02b390" />
   <Project Path="src/UzayBank.Domain/UzayBank.Domain.csproj" Id="b5f9f2f3-0641-496d-9a04-9563ce676e13" />
