@@ -67,14 +67,14 @@ public class UzayAccountService : IUzayAccountService
         };
     }
 
-    public async Task<List<TransactionDto>> GetTransactionsAsync(int accountId, int userId)
+    public async Task<List<TransactionDto>?> GetTransactionsAsync(int accountId, int userId)
     {
-        // Sahiplik kontrolü — başkasının hesabının hareketleri görülemez
+
         var owns = await _context.Accounts
             .AnyAsync(a => a.Id == accountId && a.UserId == userId);
 
         if (!owns)
-            return new List<TransactionDto>();
+            return null;
 
         return await _context.Transactions
             .Where(t => t.AccountId == accountId)
@@ -90,6 +90,7 @@ public class UzayAccountService : IUzayAccountService
             })
             .ToListAsync();
     }
+
 
     public async Task<TransferResultDto> TransferAsync(int userId, TransferDto dto)
     {

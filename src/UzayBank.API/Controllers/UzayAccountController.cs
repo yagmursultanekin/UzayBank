@@ -57,6 +57,13 @@ public class UzayAccountController : ControllerBase
             return Unauthorized();
 
         var transactions = await _uzayAccountService.GetTransactionsAsync(accountId, userId.Value);
+
+        // Servis, hesap bu kullanıcıya ait değilse null döner.
+        // Boş liste ile karıştırmamak önemli: boş liste "işlem yok" demek,
+        // null ise "erişim yetkin yok" demek — ikisi farklı HTTP durumu gerektirir.
+        if (transactions == null)
+            return Forbid();
+
         return Ok(transactions);
     }
 

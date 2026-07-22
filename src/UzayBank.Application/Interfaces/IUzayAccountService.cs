@@ -11,7 +11,7 @@ public interface IUzayAccountService
     Task<AccountDto> CreateAccountAsync(int userId, CreateUzayAccountDto dto);
 
     /// <summary>Hesabın işlem geçmişi. Sahiplik kontrolü içerir.</summary>
-    Task<List<TransactionDto>> GetTransactionsAsync(int accountId, int userId);
+    Task<List<TransactionDto>?> GetTransactionsAsync(int accountId, int userId);
 
     /// <summary>
     /// Hesaplar arası transfer. Gönderen ve alıcı hesaplarda ayrı işlem kaydı oluşur,

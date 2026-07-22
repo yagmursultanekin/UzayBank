@@ -85,10 +85,14 @@ public class AccountController : ControllerBase
         {
             var txs = await _uzayAccountService.GetTransactionsAsync(account.Id, userId.Value);
 
-            // IUzayAccountService henüz tarih filtresi desteklemiyor,
-            // bu yüzden süzme işlemi burada yapılıyor.
+            // Servis artık yetkisiz erişimde null dönüyor. Burada null beklenmez
+            // (hesapları zaten bu kullanıcı için çektik) ama derleyici uyarısını
+            // susturmak ve olası bir mantık hatasında çökmemek için kontrol ediyoruz.
+            if (txs == null)
+                continue;
+
             uzayTransactions.AddRange(
-     txs.Where(t => t.TransactionDate >= startDate && t.TransactionDate < endDate.AddDays(1)));
+                txs.Where(t => t.TransactionDate >= startDate && t.TransactionDate < endDate.AddDays(1)));
         }
 
         var combined = bankTransactions
