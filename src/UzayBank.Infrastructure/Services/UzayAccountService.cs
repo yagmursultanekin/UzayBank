@@ -150,6 +150,8 @@ public class UzayAccountService : IUzayAccountService
                 BalanceAfterTransaction = to.Balance
             });
 
+            // RowVersion sayesinde bu SaveChanges, hesap satırlarını yalnızca
+            // biz okuduğumuzdan beri değişmemişlerse günceller.
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
 
@@ -159,7 +161,19 @@ public class UzayAccountService : IUzayAccountService
                 NewBalance = from.Balance
             };
         }
-        catch
+        catch (DbUpdateConcurrencyException)
+        {
+            // Araya başka bir işlem girdi ve hesabın bakiyesini değiştirdi.
+            // Bizim elimizdeki bakiye artık güncel değil, bu yüzden işlemi
+            // geri alıp kullanıcıdan tekrar denemesini istiyoruz.
+            //
+            // Otomatik retry yapmıyoruz: bakiye değiştiği için "yeterli bakiye"
+            // kontrolünün sonucu da değişmiş olabilir. Kullanıcının güncel
+            // bakiyeyi görüp karar vermesi daha doğru.
+            await transaction.RollbackAsync();
+            return Fail("CONCURRENT_MODIFICATION");
+        }
+        catch (Exception)
         {
             await transaction.RollbackAsync();
             return Fail("TRANSFER_FAILED");
@@ -189,7 +203,16 @@ public class UzayAccountService : IUzayAccountService
             BalanceAfterTransaction = account.Balance
         });
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Yatırma işleminde bakiye kontrolü yok, ama eşzamanlı iki yatırma
+            // birbirini silebilir (100+50 ve 100+30 aynı anda → 150 yerine 130).
+            return Fail("CONCURRENT_MODIFICATION");
+        }
 
         return new TransferResultDto { Success = true, NewBalance = account.Balance };
     }
@@ -220,7 +243,16 @@ public class UzayAccountService : IUzayAccountService
             BalanceAfterTransaction = account.Balance
         });
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Bakiye biz okuduktan sonra değişti — yetersiz bakiye kontrolü
+            // artık geçersiz olabilir, işlemi reddediyoruz.
+            return Fail("CONCURRENT_MODIFICATION");
+        }
 
         return new TransferResultDto { Success = true, NewBalance = account.Balance };
     }

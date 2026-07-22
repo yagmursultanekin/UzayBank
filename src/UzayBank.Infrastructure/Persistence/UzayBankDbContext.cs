@@ -35,5 +35,42 @@ public class UzayBankDbContext : DbContext
                   .HasForeignKey(ua => ua.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
+
+        modelBuilder.Entity<Account>(entity =>
+        {
+            // Para alanlarında precision'ı açıkça belirtiyoruz.
+            // Belirtilmezse EF Core varsayılan olarak decimal(18,2) kullanır ve
+            // migration sırasında "sessiz kesme olabilir" uyarısı verir.
+            // Değer aynı olsa bile açık yazmak, kararın bilinçli olduğunu gösterir
+            // ve EF sürümü değişince davranışın sessizce kaymasını engeller.
+            entity.Property(a => a.Balance).HasPrecision(18, 2);
+
+            entity.Property(a => a.AccountNumber).HasMaxLength(34).IsRequired();
+            entity.Property(a => a.IBAN).HasMaxLength(34).IsRequired();
+            entity.Property(a => a.Currency).HasMaxLength(3).IsRequired();
+            entity.Property(a => a.AccountHolderName).HasMaxLength(200).IsRequired();
+
+            // Transfer, alıcıyı IBAN ile buluyor. IBAN benzersiz değilse
+            // FirstOrDefaultAsync sessizce ilk eşleşeni seçer — para yanlış
+            // hesaba gidebilir. Bu yüzden kısıtı veritabanına koyuyoruz.
+            entity.HasIndex(a => a.IBAN).IsUnique();
+            entity.HasIndex(a => a.AccountNumber).IsUnique();
+
+            // Kullanıcının hesaplarını listeleme en sık yapılan sorgu.
+            entity.HasIndex(a => a.UserId);
+        });
+
+        modelBuilder.Entity<Transaction>(entity =>
+        {
+            entity.Property(t => t.Amount).HasPrecision(18, 2);
+            entity.Property(t => t.BalanceAfterTransaction).HasPrecision(18, 2);
+
+            // Açıklama sınırsız büyümesin — transfer açıklaması alıcı adıyla
+            // birleştiği için uzayabiliyor.
+            entity.Property(t => t.Description).HasMaxLength(500);
+
+            // İşlem geçmişi her zaman hesap + tarih sırasıyla sorgulanıyor.
+            entity.HasIndex(t => new { t.AccountId, t.TransactionDate });
+        });
     }
 }
