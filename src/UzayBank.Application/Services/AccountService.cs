@@ -89,10 +89,20 @@ public class AccountService : IAccountService
 
         return all.OrderByDescending(t => t.TransactionDate).ToList();
     }
+    /// <summary>
+    /// Yönetici paneli için tüm hesapları döndürür (MSSQL kaynağı).
+    ///
+    /// Kullanıcı filtresi YOK — yönetici, henüz kimseye atanmamış hesapları da
+    /// görmek zorunda, çünkü atama işlemini o yapıyor.
+    ///
+    /// Önceki hali GetAccountsByUserIdAsync(0) çağırıyordu; sistemde 0 numaralı
+    /// kullanıcı olmadığı için bu her zaman boş liste döndürüyordu ve MSSQL
+    /// modunda yönetici paneli çalışmıyordu.
+    /// </summary>
     public async Task<List<AccountDto>> GetAllAccountsForAdminAsync()
     {
-        // MSSQL modunda tüm hesaplar zaten DB'de — filtresiz döndür
-        return await GetAccountsByUserIdAsync(0);   // ya da tüm hesapları çeken mevcut mantık
+        var accounts = await _accountRepository.GetAllAsync();
+        return _mapper.Map<List<AccountDto>>(accounts);
     }
 
 }
