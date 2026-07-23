@@ -12,10 +12,12 @@ namespace UzayBank.API.Controllers;
 public class UzayAccountController : ControllerBase
 {
     private readonly IUzayAccountService _uzayAccountService;
+    private readonly IIntegrityService _integrityService;
 
-    public UzayAccountController(IUzayAccountService uzayAccountService)
+    public UzayAccountController(IUzayAccountService uzayAccountService, IIntegrityService integrityService)
     {
         _uzayAccountService = uzayAccountService;
+        _integrityService = integrityService;
     }
 
     private int? GetUserId()
@@ -112,6 +114,29 @@ public class UzayAccountController : ControllerBase
 
         if (!result.Success)
             return BadRequest(new { code = result.ErrorCode });
+
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Hesabın işlem zincirinin bütünlüğünü doğrular.
+    ///
+    /// Her kaydın hash'i yeniden hesaplanıp saklanan değerle karşılaştırılır,
+    /// ayrıca zincir bağlantıları kontrol edilir. Kurcalanmış kayıtlar
+    /// sonuçta işaretlenir.
+    /// </summary>
+    [HttpGet("{accountId:int}/verify")]
+    public async Task<IActionResult> VerifyIntegrity(int accountId)
+    {
+        var userId = GetUserId();
+        if (userId == null)
+            return Unauthorized();
+
+        var result = await _integrityService.VerifyAccountAsync(accountId, userId.Value);
+
+        // Hesap bu kullanıcıya ait değilse null döner.
+        if (result == null)
+            return Forbid();
 
         return Ok(result);
     }

@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using UzayBank.Application.DTOs;
 using UzayBank.Application.Interfaces;
 using UzayBank.Domain.Entities;
 using UzayBank.Domain.Enums;
+using UzayBank.Domain.Interfaces;
 using UzayBank.Infrastructure.Persistence;
-using Microsoft.Extensions.Logging;
+using UzayBank.Domain.Services;
 
 namespace UzayBank.Infrastructure.Services;
 
@@ -12,11 +14,13 @@ public class UzayAccountService : IUzayAccountService
 {
     private readonly UzayBankDbContext _context;
     private readonly ILogger<UzayAccountService> _logger;
+    private readonly ITransactionHasher _hasher;
 
-    public UzayAccountService(UzayBankDbContext context, ILogger<UzayAccountService> logger)
+    public UzayAccountService(UzayBankDbContext context, ILogger<UzayAccountService> logger, ITransactionHasher hasher)
     {
         _context = context;
         _logger = logger;
+        _hasher = hasher;
     }
 
     public async Task<List<AccountDto>> GetMyAccountsAsync(int userId)
@@ -174,7 +178,10 @@ public class UzayAccountService : IUzayAccountService
                 ? "Transfer"
                 : dto.Description;
 
-            _context.Transactions.Add(new Transaction
+            // Transfer iki ayrı kayıt üretir: gönderenin hesabından çıkış,
+            // alıcının hesabına giriş. Her ikisi de KENDİ hesabının zincirine
+            // ayrı birer halka olarak ekleniyor — zincirler hesap bazlı olduğu için.
+            var debitEntry = new Transaction
             {
                 AccountId = from.Id,
                 Amount = -dto.Amount,
@@ -182,9 +189,9 @@ public class UzayAccountService : IUzayAccountService
                 Description = $"{description} → {to.AccountHolderName}",
                 TransactionDate = now,
                 BalanceAfterTransaction = from.Balance
-            });
+            };
 
-            _context.Transactions.Add(new Transaction
+            var creditEntry = new Transaction
             {
                 AccountId = to.Id,
                 Amount = dto.Amount,
@@ -192,7 +199,13 @@ public class UzayAccountService : IUzayAccountService
                 Description = $"{description} ← {from.AccountHolderName}",
                 TransactionDate = now,
                 BalanceAfterTransaction = to.Balance
-            });
+            };
+
+            await ApplyHashAsync(debitEntry);
+            await ApplyHashAsync(creditEntry);
+
+            _context.Transactions.Add(debitEntry);
+            _context.Transactions.Add(creditEntry);
 
             // RowVersion sayesinde bu SaveChanges, hesap satırlarını yalnızca
             // biz okuduğumuzdan beri değişmemişlerse günceller.
@@ -242,7 +255,9 @@ public class UzayAccountService : IUzayAccountService
 
         account.Balance += dto.Amount;
 
-        _context.Transactions.Add(new Transaction
+        // Nesneyi önce oluşturuyoruz, çünkü hash hesaplamak için alanlarının
+        // dolu olması gerekiyor.
+        var transaction = new Transaction
         {
             AccountId = account.Id,
             Amount = dto.Amount,
@@ -250,7 +265,12 @@ public class UzayAccountService : IUzayAccountService
             Description = string.IsNullOrWhiteSpace(dto.Description) ? "Para Yatırma" : dto.Description,
             TransactionDate = DateTime.UtcNow,
             BalanceAfterTransaction = account.Balance
-        });
+        };
+
+        // Hash alanlarını doldur (TransactionRef, PreviousTxHash, TxHash).
+        await ApplyHashAsync(transaction);
+
+        _context.Transactions.Add(transaction);
 
         try
         {
@@ -282,7 +302,7 @@ public class UzayAccountService : IUzayAccountService
 
         account.Balance -= dto.Amount;
 
-        _context.Transactions.Add(new Transaction
+        var transaction = new Transaction
         {
             AccountId = account.Id,
             Amount = -dto.Amount,
@@ -290,7 +310,11 @@ public class UzayAccountService : IUzayAccountService
             Description = string.IsNullOrWhiteSpace(dto.Description) ? "Para Çekme" : dto.Description,
             TransactionDate = DateTime.UtcNow,
             BalanceAfterTransaction = account.Balance
-        });
+        };
+
+        await ApplyHashAsync(transaction);
+
+        _context.Transactions.Add(transaction);
 
         try
         {
@@ -310,6 +334,52 @@ public class UzayAccountService : IUzayAccountService
 
     private static TransferResultDto Fail(string code) =>
         new() { Success = false, ErrorCode = code };
+
+    /// <summary>
+    /// Bir hesaptaki en son işlemin hash'ini döndürür.
+    ///
+    /// Zincirin son halkasını buluyoruz — yeni işlem buna bağlanacak.
+    /// Hesabın ilk işlemiyse (veya önceki kayıtların hash'i yoksa)
+    /// GENESIS değeri döner.
+    ///
+    /// NEDEN Id'YE GÖRE SIRALIYORUZ:
+    /// Tarihe göre sıralamak güvenilir değil. Bir transferde gönderen ve alıcı
+    /// kayıtları aynı TransactionDate değerini alıyor; hangisinin "son" olduğu
+    /// belirsiz kalır. Id ise her zaman artan ve benzersiz.
+    /// </summary>
+    private async Task<string> GetLastHashAsync(int accountId)
+    {
+        var lastHash = await _context.Transactions
+            .Where(t => t.AccountId == accountId)
+            .OrderByDescending(t => t.Id)
+            .Select(t => t.TxHash)
+            .FirstOrDefaultAsync();
+
+        // Kayıt yoksa (ilk işlem) veya eski kayıtların hash'i yoksa
+        // zincirin başlangıcını işaretliyoruz.
+        return string.IsNullOrWhiteSpace(lastHash)
+            ? TransactionHasher.GenesisHash
+            : lastHash;
+    }
+
+    /// <summary>
+    /// Yeni bir işlem kaydının hash alanlarını doldurur.
+    ///
+    /// Kayıt veritabanına eklenmeden ÖNCE çağrılır — bu sayede tek bir
+    /// SaveChanges yeterli olur. TransactionRef'i uygulama ürettiği için
+    /// hash'i hesaplamak veritabanına ihtiyaç duymuyor.
+    /// </summary>
+    private async Task ApplyHashAsync(Transaction transaction)
+    {
+        // Kalıcı kimlik burada üretiliyor.
+        transaction.TransactionRef = Guid.NewGuid();
+
+        // Zincirin son halkasını bul.
+        transaction.PreviousTxHash = await GetLastHashAsync(transaction.AccountId);
+
+        // Parmak izini hesapla.
+        transaction.TxHash = _hasher.ComputeHash(transaction, transaction.PreviousTxHash);
+    }
 
     /// <summary>
     /// 16 haneli benzersiz hesap numarası üretir.

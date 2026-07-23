@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using UzayBank.Application.Interfaces;
 using UzayBank.Application.Services;
 using UzayBank.Domain.Interfaces;
+using UzayBank.Domain.Services;
 using UzayBank.Infrastructure.ExternalServices;
 using UzayBank.Infrastructure.Persistence;
 using UzayBank.Infrastructure.Services;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,12 @@ builder.Services.AddScoped<IBranchService, VakifBankBranchService>();
 builder.Services.AddScoped<IMarketService, VakifBankMarketService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IUzayAccountService, UzayAccountService>();
+builder.Services.AddScoped<IIntegrityService, IntegrityService>();
+// Hash servisi — işlem kayıtlarının değişmezlik parmak izini üretir.
+// Durum tutmadığı (stateless) için Singleton: her istekte yeni nesne
+// oluşturmaya gerek yok.
+builder.Services.AddSingleton<ITransactionHasher, TransactionHasher>();
+
 // Global hata yönetimi
 builder.Services.AddExceptionHandler<UzayBank.API.Middlewares.GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
