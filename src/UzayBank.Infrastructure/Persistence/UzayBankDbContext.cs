@@ -86,6 +86,13 @@ public class UzayBankDbContext : DbContext
             // bir değer tutuyor.
             entity.Property(t => t.TxHash).HasMaxLength(64);
             entity.Property(t => t.PreviousTxHash).HasMaxLength(64);
+            // TransactionRef, işlemin kalıcı kimliği — benzersiz olmak zorunda.
+            // GUID pratikte çakışmaz, ama kısıtı veritabanına koyuyoruz: kod
+            // hata yapabilir (ör. bir yerde Guid.Empty atanabilir), DB kısıtı yapamaz.
+            //
+            // Unique index ayrıca doğrulama sorgularını hızlandırır — blockchain
+            // katmanında işlemleri bu alanla arayacağız.
+            entity.HasIndex(t => t.TransactionRef).IsUnique();
         });
     }
 }

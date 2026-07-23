@@ -39,7 +39,15 @@ public class TransactionHasher : ITransactionHasher
         var builder = new StringBuilder();
 
         // ALAN SIRASI SABİTTİR. Sıra değişirse hash değişir.
-        builder.Append(transaction.Id.ToString(CultureInfo.InvariantCulture));
+
+        // Kimlik olarak TransactionRef kullanıyoruz, Id değil.
+        // Id veritabanı tarafından kayıt sırasında atanıyor; hash'i kayıttan
+        // ÖNCE hesaplamak istediğimiz için o an Id henüz 0 olurdu.
+        //
+        // "D" formatı: tireli standart gösterim (3f2504e0-4f89-...).
+        // Format açıkça belirtiliyor — varsayılana güvenmek, ileride birinin
+        // hangi formatın kullanıldığından emin olamamasına yol açar.
+        builder.Append(transaction.TransactionRef.ToString("D", CultureInfo.InvariantCulture));
         builder.Append(Separator);
 
         builder.Append(transaction.AccountId.ToString(CultureInfo.InvariantCulture));
