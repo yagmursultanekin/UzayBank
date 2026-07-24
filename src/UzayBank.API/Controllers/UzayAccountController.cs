@@ -13,13 +13,12 @@ public class UzayAccountController : ControllerBase
 {
     private readonly IUzayAccountService _uzayAccountService;
     private readonly IIntegrityService _integrityService;
-    private readonly IBlockchainAnchorService _blockchainService;
 
-    public UzayAccountController(IUzayAccountService uzayAccountService, IIntegrityService integrityService, IBlockchainAnchorService blockchainService)
+    public UzayAccountController(IUzayAccountService uzayAccountService, IIntegrityService integrityService)
     {
         _uzayAccountService = uzayAccountService;
         _integrityService = integrityService;
-        _blockchainService = blockchainService;
+    
     }
 
     private int? GetUserId()
@@ -141,35 +140,5 @@ public class UzayAccountController : ControllerBase
             return Forbid();
 
         return Ok(result);
-    }
-
-    /// <summary>
-    /// GEÇİCİ TEST ENDPOINT'İ — blockchain bağlantısını doğrulamak için.
-    /// Doğrulama tamamlandıktan sonra kaldırılacak.
-    /// </summary>
-    [HttpGet("{accountId:int}/blockchain-test")]
-    public async Task<IActionResult> BlockchainTest(int accountId)
-    {
-        var record = await _blockchainService.GetAnchorAsync(accountId);
-
-        if (record == null)
-            return Ok(new { message = "Bu hesap için zincirde kayıt yok." });
-
-        return Ok(new
-        {
-            hash = record.Hash,
-            anchoredAt = record.AnchoredAt
-        });
-    }
-
-    /// <summary>
-    /// GEÇİCİ TEST ENDPOINT'İ — blockchain'e yazma işlemini doğrulamak için.
-    /// Doğrulama tamamlandıktan sonra kaldırılacak.
-    /// </summary>
-    [HttpPost("{accountId:int}/blockchain-test")]
-    public async Task<IActionResult> BlockchainTestWrite(int accountId, [FromQuery] string hash)
-    {
-        var txHash = await _blockchainService.AnchorAsync(accountId, hash);
-        return Ok(new { transactionHash = txHash });
     }
 }
