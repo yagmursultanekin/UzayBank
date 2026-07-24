@@ -53,8 +53,45 @@ public class AccountIntegrityDto
     /// <summary>Sorun tespit edilen kayıt sayısı.</summary>
     public int InvalidCount { get; set; }
 
-    /// <summary>Zincirin tamamı sağlam mı?</summary>
+    /// <summary>Veritabanı içi zincir sağlam mı?</summary>
     public bool IsValid { get; set; }
+
+    // --- Blockchain doğrulaması ---
+
+    /// <summary>
+    /// Veritabanındaki zincirin son hash'i.
+    /// Blockchain'e sabitlenmesi gereken değer budur.
+    /// </summary>
+    public string? CurrentChainHash { get; set; }
+
+    /// <summary>
+    /// Blockchain'e sabitlenmiş hash. Hiç sabitlenmemişse null.
+    /// </summary>
+    public string? AnchoredHash { get; set; }
+
+    /// <summary>Sabitlemenin blockchain'e yazıldığı zaman.</summary>
+    public DateTime? AnchoredAt { get; set; }
+
+    /// <summary>
+    /// Veritabanındaki zincir, blockchain'deki kayıtla eşleşiyor mu?
+    ///
+    /// Eşleşmiyorsa iki ihtimal var:
+    ///   1) Son işlemler henüz zincire sabitlenmemiş (normal durum)
+    ///   2) Veritabanı kurcalanmış (kritik durum)
+    /// Bu ikisini ayırt etmek için AnchorStatus alanına bakılmalı.
+    /// </summary>
+    public bool IsAnchorValid { get; set; }
+
+    /// <summary>
+    /// Blockchain doğrulamasının sonucu:
+    /// "NotAnchored"  — bu hesap için zincirde hiç kayıt yok
+    /// "Matched"      — veritabanı ve blockchain birebir uyuşuyor
+    /// "Outdated"     — sabitlenen hash geçmişteki bir kayda ait; yeni
+    ///                  işlemler henüz sabitlenmemiş
+    /// "Mismatch"     — sabitlenen hash veritabanında hiç bulunmuyor;
+    ///                  kurcalama belirtisi
+    /// </summary>
+    public string AnchorStatus { get; set; } = "NotAnchored";
 
     public List<TransactionIntegrityDto> Transactions { get; set; } = new();
 }
