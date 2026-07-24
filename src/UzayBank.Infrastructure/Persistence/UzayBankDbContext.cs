@@ -13,6 +13,7 @@ public class UzayBankDbContext : DbContext
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<UserAccount> UserAccounts => Set<UserAccount>();
+    public DbSet<AnchorQueueItem> AnchorQueue => Set<AnchorQueueItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -94,5 +95,22 @@ public class UzayBankDbContext : DbContext
             // katmanında işlemleri bu alanla arayacağız.
             entity.HasIndex(t => t.TransactionRef).IsUnique();
         });
+
+        modelBuilder.Entity<AnchorQueueItem>(entity =>
+        {
+            // Arka plan servisi her turda "işlenmemiş kayıtlar" sorgusu atıyor.
+            // Bu sorgu sık çalıştığı ve tablo zamanla büyüyeceği için index gerekli.
+            //
+            // Bileşik index (IsProcessed, AccountId): önce işlenmemişleri süzüyor,
+            // sonra hesaba göre grupluyor.
+            entity.HasIndex(q => new { q.IsProcessed, q.AccountId });
+
+            // Blockchain işlem kimliği 0x + 64 hex karakter = 66.
+            entity.Property(q => q.BlockchainTxHash).HasMaxLength(66);
+
+            // Hata mesajları uzun olabilir ama sınırsız da olmamalı.
+            entity.Property(q => q.LastError).HasMaxLength(1000);
+        });
+
     }
 }

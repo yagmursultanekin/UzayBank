@@ -76,6 +76,10 @@ builder.Services.Configure<UzayBank.Infrastructure.Blockchain.BlockchainOptions>
     builder.Configuration.GetSection(
         UzayBank.Infrastructure.Blockchain.BlockchainOptions.SectionName));
 
+// Sabitleme kuyruğunu düzenli aralıklarla boşaltan arka plan servisi.
+// AddHostedService, uygulama açıldığında başlatır ve kapanana kadar çalıştırır.
+builder.Services.AddHostedService<UzayBank.Infrastructure.Blockchain.AnchorBackgroundService>();
+
 builder.Services.AddScoped<IBlockchainAnchorService,
     UzayBank.Infrastructure.Blockchain.BlockchainAnchorService>();
 // Hash servisi — işlem kayıtlarının değişmezlik parmak izini üretir.

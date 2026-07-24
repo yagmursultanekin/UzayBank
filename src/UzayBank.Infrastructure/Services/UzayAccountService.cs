@@ -207,6 +207,10 @@ public class UzayAccountService : IUzayAccountService
             _context.Transactions.Add(debitEntry);
             _context.Transactions.Add(creditEntry);
 
+            // Transfer iki hesabın da zincirini değiştiriyor — ikisi de sabitlenmeli.
+            EnqueueAnchor(from.Id);
+            EnqueueAnchor(to.Id);
+
             // RowVersion sayesinde bu SaveChanges, hesap satırlarını yalnızca
             // biz okuduğumuzdan beri değişmemişlerse günceller.
             await _context.SaveChangesAsync();
@@ -272,6 +276,9 @@ public class UzayAccountService : IUzayAccountService
 
         _context.Transactions.Add(transaction);
 
+        // Hesabın zinciri değişti; blockchain'e sabitlenmesi gerekiyor.
+        EnqueueAnchor(account.Id);
+
         try
         {
             await _context.SaveChangesAsync();
@@ -315,6 +322,7 @@ public class UzayAccountService : IUzayAccountService
         await ApplyHashAsync(transaction);
 
         _context.Transactions.Add(transaction);
+        EnqueueAnchor(account.Id);
 
         try
         {
@@ -379,6 +387,25 @@ public class UzayAccountService : IUzayAccountService
 
         // Parmak izini hesapla.
         transaction.TxHash = _hasher.ComputeHash(transaction, transaction.PreviousTxHash);
+    }
+
+    /// <summary>
+    /// Bir hesabı blockchain'e sabitlenmek üzere kuyruğa ekler.
+    ///
+    /// Kaydı burada yalnızca EKLİYORUZ, SaveChanges çağırmıyoruz. Böylece not,
+    /// işlemin kendi transaction'ı içinde yazılır: ya ikisi birden kaydedilir
+    /// ya hiçbiri. "İşlem kaydedildi ama sabitleme notu kayboldu" durumu
+    /// oluşamaz.
+    /// </summary>
+    private void EnqueueAnchor(int accountId)
+    {
+        _context.AnchorQueue.Add(new AnchorQueueItem
+        {
+            AccountId = accountId,
+            CreatedAt = DateTime.UtcNow,
+            IsProcessed = false,
+            AttemptCount = 0
+        });
     }
 
     /// <summary>
